@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">SkilledServiceApp</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <!--LoginFragment-->
+    <string name="label_login">Login</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_password">Password</string>
+    <string name="do_not_have_an_account">Don\'t have an account?</string>
+
+    <!--Signup Fragment-->
+    <string name="i_am_a_worker">I am a Worker :</string>
+    <string name="label_registration">Registration</string>
+    <string name="hint_name">Name</string>
+    <string name="hint_confirm_password">Confirm Password</string>
+    <string name="have_an_account">Have an account?</string>
+
+    <!--Actions/Button-->
+    <string name="action_login">Login</string>
+    <string name="action_signup">SignUp</string>
+
+    <!--error string-->
+    <string name="error_oops_something_went_wrong">Oops!! Something went wrong.</string>
+    <string name="error_please_enter_proper_name">Please enter proper name.</string>
+    <string name="error_username_length">Username should be 6\-16 characters long.</string>
+    <string name="error_password_length">Password should be 6\-16 characters long.</string>
+    <string name="error_confirm_password">Password does not match.</string>
+</resources>
