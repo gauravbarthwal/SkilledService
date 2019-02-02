@@ -22,4 +22,14 @@ public class Skill {
 
     private int skillId;
     private String skillType;
+
+    public int getSkillIcon() {
+        return skillIcon;
+    }
+
+    public void setSkillIcon(int skillIcon) {
+        this.skillIcon = skillIcon;
+    }
+
+    private int skillIcon;
 }

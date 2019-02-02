@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.provider.Settings;
 
+import com.servicenow.skilledserviceapp.R;
 import com.servicenow.skilledserviceapp.utils.Constants;
 import com.servicenow.skilledserviceapp.utils.LogUtils;
 import com.servicenow.skilledserviceapp.utils.PreferenceUtils;
@@ -18,6 +19,19 @@ public class DatabaseManager {
     private DatabaseHelper mDatabaseHelper;
     private Context mContext;
     private SQLiteDatabase mSqLiteDatabase;
+    private final String[] skills = new String[]{
+            "Barber",
+            "Beautician",
+            "Carpenter",
+            "Cooker",
+            "Electrician",
+            "House Cleaning",
+            "Movers",
+            "Painter",
+            "Plumber",
+            "Seamstress",
+            "Stylist"
+    };
 
     public DatabaseManager(Context mContext) {
         this.mContext = mContext;
@@ -40,11 +54,11 @@ public class DatabaseManager {
      */
     public void insertSkillsToDatabase() {
         try {
-            final String[] skills = new String[]{"Plumbing","Electrician","Painter","Carpenter","Home Cleaning","Beautician", "Moving Homes", "Physiotherapist"};
-            mSqLiteDatabase.execSQL("delete from "+ DatabaseHelper.TABLE_SKILL);
+            mSqLiteDatabase.execSQL("delete from " + DatabaseHelper.TABLE_SKILL);
             ContentValues contentValue = new ContentValues();
-            for (String skill : skills) {
-                contentValue.put(DatabaseHelper.COLUMN_SKILL_TYPE, skill);
+            for (int i =0; i <skills.length; i++) {
+                contentValue.put(DatabaseHelper.COLUMN_SKILL_TYPE, skills[i]);
+                //contentValue.put(DatabaseHelper.COLUMN_SKILL_ICON, skillIconsArray[i]);
                 mSqLiteDatabase.insert(DatabaseHelper.TABLE_SKILL, null, contentValue);
             }
         } catch (SQLException ignored) {
@@ -53,8 +67,9 @@ public class DatabaseManager {
 
     /**
      * insertUserData to DatabaseHelper.TABLE_USER and DatabaseHelper.TABLE_REQUESTER or DatabaseHelper.TABLE_WORKER
+     *
      * @param userName - Unique username
-     * @param name - User's full name
+     * @param name     - User's full name
      * @param userType - Requester/Worker
      * @return - UserId
      */
@@ -75,19 +90,19 @@ public class DatabaseManager {
                     requesterContentValues.put(DatabaseHelper.COLUMN_REQUESTER_ID, userId);
                     requesterContentValues.put(DatabaseHelper.COLUMN_NAME, name);
                     insertedRow = mSqLiteDatabase.insert(DatabaseHelper.TABLE_REQUESTER, null, requesterContentValues);
-                    PreferenceUtils.getInstance(mContext).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER,true);
+                    PreferenceUtils.getInstance(mContext).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER, true);
                 } else {
                     ContentValues workerContentValues = new ContentValues();
                     workerContentValues.put(DatabaseHelper.COLUMN_WORKER_ID, userId);
                     workerContentValues.put(DatabaseHelper.COLUMN_NAME, name);
                     workerContentValues.put(DatabaseHelper.COLUMN_SKILL_ID, -1);
                     insertedRow = mSqLiteDatabase.insert(DatabaseHelper.TABLE_WORKER, null, workerContentValues);
-                    PreferenceUtils.getInstance(mContext).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER,false);
+                    PreferenceUtils.getInstance(mContext).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER, false);
                 }
             }
             if (insertedRow == -1) {
                 deleteUser(userId);
-                PreferenceUtils.getInstance(mContext).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER,false);
+                PreferenceUtils.getInstance(mContext).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER, false);
                 return null;
             }
             return userId;
@@ -95,13 +110,14 @@ public class DatabaseManager {
             if (Constants.PRINT_LOGS)
                 e.printStackTrace();
             deleteUser(generateUserId(userName));
-            PreferenceUtils.getInstance(mContext).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER,false);
+            PreferenceUtils.getInstance(mContext).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER, false);
             return null;
         }
     }
 
     /**
      * updates worker skill
+     *
      * @param skillId - skill id
      * @return - true if updated else false
      */
@@ -118,13 +134,14 @@ public class DatabaseManager {
 
     /**
      * gets logged in user information
+     *
      * @return - {@link Cursor}
      */
-    public Cursor loginUser (String userName, String userPassword) {
+    public Cursor loginUser(String userName, String userPassword) {
         try {
             String rawQuery;
-            rawQuery = "SELECT "+ DatabaseHelper.COLUMN_USER_ID + ", " + DatabaseHelper.COLUMN_USER_TYPE +" FROM " + DatabaseHelper.TABLE_USER
-            + " WHERE " + DatabaseHelper.COLUMN_USER_NAME + "=" + userName + " AND " + DatabaseHelper.COLUMN_USER_PASSWORD + "=" + userPassword;
+            rawQuery = "SELECT " + DatabaseHelper.COLUMN_USER_ID + ", " + DatabaseHelper.COLUMN_USER_TYPE + " FROM " + DatabaseHelper.TABLE_USER
+                    + " WHERE " + DatabaseHelper.COLUMN_USER_NAME + "=" + userName + " AND " + DatabaseHelper.COLUMN_USER_PASSWORD + "=" + userPassword;
             LogUtils.d(TAG, "#loginUser#query ::" + rawQuery);
             Cursor mCursor = mSqLiteDatabase.rawQuery(rawQuery, null);
             if (mCursor != null) {
@@ -139,9 +156,10 @@ public class DatabaseManager {
 
     /**
      * gets logged in user information
+     *
      * @return - {@link Cursor}
      */
-    public Cursor getLoggedInUserData () {
+    public Cursor getLoggedInUserData() {
         try {
             String rawQuery;
             if (PreferenceUtils.getInstance(mContext).getBooleanPreference(Constants.PREF_KEY_IS_REQUESTER)) {
@@ -163,9 +181,10 @@ public class DatabaseManager {
 
     /**
      * fetches all the skills
+     *
      * @return - {@link Cursor}
      */
-    public Cursor fetchSkillData () {
+    public Cursor fetchSkillData() {
         try {
             String rawQuery;
             rawQuery = "SELECT * FROM " + DatabaseHelper.TABLE_SKILL;
@@ -183,6 +202,7 @@ public class DatabaseManager {
 
     /**
      * gets logged in user information
+     *
      * @return - {@link Cursor}
      */
     public Cursor getTaskInfo() {
@@ -205,6 +225,7 @@ public class DatabaseManager {
 
     /**
      * checks if user name is exists or not
+     *
      * @param userName - username to be checked
      * @return - {@link Cursor}
      */
@@ -220,6 +241,7 @@ public class DatabaseManager {
 
     /**
      * deletes the existing user entry
+     *
      * @param userId - user's id
      */
     void deleteUser(String userId) {
@@ -227,7 +249,7 @@ public class DatabaseManager {
             mSqLiteDatabase.delete(DatabaseHelper.TABLE_USER, DatabaseHelper.COLUMN_USER_ID + "=" + userId, null);
             mSqLiteDatabase.delete(DatabaseHelper.TABLE_REQUESTER, DatabaseHelper.COLUMN_REQUESTER_ID + "=" + userId, null);
             mSqLiteDatabase.delete(DatabaseHelper.TABLE_WORKER, DatabaseHelper.COLUMN_WORKER_ID + "=" + userId, null);
-        } catch (SQLException e){
+        } catch (SQLException e) {
             if (Constants.PRINT_LOGS)
                 e.printStackTrace();
         }
@@ -235,6 +257,7 @@ public class DatabaseManager {
 
     /**
      * generates unique user id
+     *
      * @return - user id
      */
     @SuppressLint("HardwareIds")

@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -154,9 +155,11 @@ public class SkillsFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
             if (viewHolder instanceof SkillViewHolder) {
+                SkillViewHolder mSkillViewHolder = (SkillViewHolder) viewHolder;
                 Skill mSkill = mSkillArrayList.get(i);
-                ((SkillViewHolder) viewHolder).mSkillType.setText(mSkill.getSkillType());
-                ((SkillViewHolder) viewHolder).mSkillType.setTag(mSkill.getSkillId());
+                mSkillViewHolder.mSkillType.setText(mSkill.getSkillType());
+                mSkillViewHolder.mSkillType.setTag(mSkill.getSkillId());
+                mSkillViewHolder.mSkillImage.setImageResource(Constants.skillIconsArray[i]);
             }
         }
 
@@ -167,10 +170,12 @@ public class SkillsFragment extends Fragment {
 
         class SkillViewHolder extends RecyclerView.ViewHolder {
             private AppCompatTextView mSkillType;
+            private AppCompatImageView mSkillImage;
 
             SkillViewHolder(@NonNull final View itemView) {
                 super(itemView);
                 mSkillType = itemView.findViewById(R.id.skillType);
+                mSkillImage = itemView.findViewById(R.id.skillImage);
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

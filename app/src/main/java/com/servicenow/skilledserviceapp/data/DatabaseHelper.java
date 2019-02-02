@@ -38,6 +38,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String COLUMN_SKILL_ID = "skill_id";
     public static final String COLUMN_SKILL_TYPE = "skill_type";
+    public static final String COLUMN_SKILL_ICON = "skill_icon";
 
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_RATING = "rating";
@@ -62,7 +63,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_TASK_TO + " TEXT NOT NULL," + COLUMN_TASK_STATUS + " TEXT NOT NULL," + COLUMN_TASK_RATING + " REAL);";
 
     private static final String SQL_CREATE_SKILL_TABLE = "create table " + TABLE_SKILL
-            + "(" + COLUMN_SKILL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_SKILL_TYPE + " TEXT NOT NULL);";
+            + "(" + COLUMN_SKILL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_SKILL_TYPE + " TEXT NOT NULL,"+ COLUMN_SKILL_ICON +" INTEGER);";
 
 
     DatabaseHelper(Context mContext) {
