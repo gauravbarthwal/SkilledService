@@ -1,5 +1,6 @@
 package com.servicenow.skilledserviceapp.activity;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,27 +13,44 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.servicenow.skilledserviceapp.R;
+import com.servicenow.skilledserviceapp.data.DatabaseHelper;
+import com.servicenow.skilledserviceapp.data.DatabaseManager;
+import com.servicenow.skilledserviceapp.utils.Constants;
+import com.servicenow.skilledserviceapp.utils.LogUtils;
+import com.servicenow.skilledserviceapp.utils.NavigationHelper;
+import com.servicenow.skilledserviceapp.utils.PreferenceUtils;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private TextView mUserNameTV;
+    private TextView mUserRatings;
+    private FloatingActionButton mFloatingActionButton;
+
+    private DatabaseManager manager;
+    private Cursor mCursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initActivity();
+        addListeners();
+        loadUserInfo();
+    }
+
+    /**
+     * initialization of Activity
+     */
+    private void initActivity(){
+        manager = new DatabaseManager(MainActivity.this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        mFloatingActionButton = findViewById(R.id.fab);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -40,8 +58,42 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        mUserNameTV = headerView.findViewById(R.id.userName);
+        mUserRatings = headerView.findViewById(R.id.userRating);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void addListeners() {
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+    }
+
+    private void loadUserInfo(){
+        LogUtils.d(TAG, "#loadUserInfo");
+        if (manager != null) {
+            try {
+                manager.openDatabase();
+                mCursor = manager.getLoggedInUserData();
+                if (mCursor != null && mCursor.moveToFirst()) {
+                    do {
+
+                        mUserNameTV.setText(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_NAME)));
+                        mUserRatings.setText(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_RATING)));
+                    } while (mCursor.moveToNext());
+                }
+                mCursor.close();
+                manager.closeDatabase();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -94,6 +146,11 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_send) {
 
+        } else if (id == R.id.nav_logout) {
+            PreferenceUtils.getInstance(MainActivity.this).setStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID, "");
+            PreferenceUtils.getInstance(MainActivity.this).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER, false);
+            NavigationHelper.navigateToLogin(MainActivity.this);
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

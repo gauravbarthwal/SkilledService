@@ -8,6 +8,7 @@ import android.widget.Toast;
 import com.servicenow.skilledserviceapp.R;
 import com.servicenow.skilledserviceapp.fragment.SignInFragment;
 import com.servicenow.skilledserviceapp.fragment.SignUpFragment;
+import com.servicenow.skilledserviceapp.fragment.SkillsFragment;
 import com.servicenow.skilledserviceapp.utils.Constants;
 import com.servicenow.skilledserviceapp.utils.NavigationType;
 
@@ -44,6 +45,11 @@ public class HelperActivity extends FragmentActivity {
                         .replace(R.id.fragment_frame, new SignUpFragment())
                         .commit();
                 break;
+            case NAV_SKILLS_FRAGMENT:
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_frame, new SkillsFragment())
+                        .commit();
+                break;
         }
     }
 
@@ -66,6 +72,17 @@ public class HelperActivity extends FragmentActivity {
                 //.setCustomAnimations(R.anim.animation_slide_in, R.anim.animation_slide_out)
                 //.setCustomAnimations(R.anim.animation_fade_in, R.anim.animation_fade_out)
                 .replace(R.id.fragment_frame, new SignUpFragment())
+                .commit();
+    }
+
+    /**
+     * switch to {@link SkillsFragment}
+     */
+    public void switchToSkillsFragment() {
+        getSupportFragmentManager().beginTransaction()
+                //.setCustomAnimations(R.anim.animation_slide_in, R.anim.animation_slide_out)
+                //.setCustomAnimations(R.anim.animation_fade_in, R.anim.animation_fade_out)
+                .replace(R.id.fragment_frame, new SkillsFragment())
                 .commit();
     }
 }

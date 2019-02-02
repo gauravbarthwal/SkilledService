@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/off_white"
+    android:layout_margin="@dimen/margin_6"
+    android:layout_height="@dimen/item_skills_height">
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/skillType"
+        style="@style/style_label"
+        android:textSize="@dimen/text_size_20"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/margin_12"
+        android:layout_height="wrap_content"/>
+
+</RelativeLayout>

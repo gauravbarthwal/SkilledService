@@ -2,6 +2,7 @@ package com.servicenow.skilledserviceapp.fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,9 +18,11 @@ import android.view.ViewGroup;
 
 import com.servicenow.skilledserviceapp.R;
 import com.servicenow.skilledserviceapp.activity.HelperActivity;
+import com.servicenow.skilledserviceapp.data.DatabaseHelper;
 import com.servicenow.skilledserviceapp.data.DatabaseManager;
 import com.servicenow.skilledserviceapp.utils.Constants;
 import com.servicenow.skilledserviceapp.utils.NavigationHelper;
+import com.servicenow.skilledserviceapp.utils.PreferenceUtils;
 
 public class SignInFragment extends Fragment {
     public static final String TAG = SignInFragment.class.getSimpleName();
@@ -84,9 +87,20 @@ public class SignInFragment extends Fragment {
             switch (v.getId()) {
                 case R.id.action_login:
                     if (isValidated()) {
-//                        DatabaseManager manager = new DatabaseManager(mActivity);
-//                        manager.openDatabase();
-//                        manager.insertUserData(mInputUserName.getEditableText().toString(), mInputName.getEditableText().toString(), -1, mWorkerSwitch.isChecked() ? Constants.USER_WORKER : Constants.USER_REQUESTER);
+                        DatabaseManager manager = new DatabaseManager(mActivity);
+                        manager.openDatabase();
+                        Cursor mCursor = manager.loginUser(mInputUserName.getEditableText().toString(), mInputPassword.getEditableText().toString());
+                        if (mCursor != null && mCursor.moveToFirst()) {
+                            String userId = mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_USER_ID));
+                            if (userId != null && !userId.isEmpty())
+                                PreferenceUtils.getInstance(mActivity).setStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID, userId);
+
+                            String userType = mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_USER_TYPE));
+                            if (userType != null && !userType.isEmpty())
+                                PreferenceUtils.getInstance(mActivity).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER, userType.equalsIgnoreCase(Constants.USER_REQUESTER));
+                        }
+                        manager.closeDatabase();
+                        NavigationHelper.navigateToHome(getActivity());
                     }
                     break;
                 case R.id.action_signup:

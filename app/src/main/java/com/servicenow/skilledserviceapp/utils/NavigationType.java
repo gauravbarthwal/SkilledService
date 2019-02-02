@@ -9,7 +9,8 @@ import java.util.Map;
 
 public enum NavigationType {
     NAV_LOGIN("nav_login"),
-    NAV_SIGNUP("nav_signup");
+    NAV_SIGNUP("nav_signup"),
+    NAV_SKILLS_FRAGMENT("nav_skills_fragment");
 
     private static Map<String, NavigationType> navigationTypeMap;
     private String value = "";

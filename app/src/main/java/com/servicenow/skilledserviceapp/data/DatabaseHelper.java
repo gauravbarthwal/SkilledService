@@ -19,14 +19,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     static final String TABLE_SKILL = "tbl_skill";
 
     // columns
-    static final String COLUMN_USER_ID = "user_id";
-    static final String COLUMN_USER_NAME = "user_name";
-    static final String COLUMN_USER_TYPE = "user_type";
+    public static final String COLUMN_USER_ID = "user_id";
+    public static final String COLUMN_USER_NAME = "user_name";
+    public static final String COLUMN_USER_PASSWORD = "user_password";
+    public static final String COLUMN_USER_TYPE = "user_type";
 
     static final String COLUMN_REQUESTER_ID = "requester_id";
 
     static final String COLUMN_WORKER_ID = "worker_id";
-    static final String COLUMN_WORKER_SKILL_ID = "skill_id";
 
     static final String COLUMN_TASK_ID = "task_id";
     static final String COLUMN_TASK_DESCRIPTION = "task_description";
@@ -36,17 +36,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     static final String COLUMN_TASK_STATUS = "task_status";
     static final String COLUMN_TASK_RATING = "task_rating";
 
-    static final String COLUMN_SKILL_ID = "skill_id";
-    static final String COLUMN_SKILL_TYPE = "skill_type";
+    public static final String COLUMN_SKILL_ID = "skill_id";
+    public static final String COLUMN_SKILL_TYPE = "skill_type";
 
-    static final String COLUMN_NAME = "name";
-    static final String COLUMN_RATING = "rating";
+    public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_RATING = "rating";
     static final String COLUMN_REVIEW = "review";
 
     // create table query
     private static final String SQL_CREATE_USER_TABLE = "create table " + TABLE_USER
             + "(" + COLUMN_USER_ID + " TEXT PRIMARY KEY, " + COLUMN_USER_NAME + " TEXT NOT NULL UNIQUE, "
-            + COLUMN_USER_TYPE + " TEXT NOT NULL);";
+            + COLUMN_USER_PASSWORD + " TEXT NOT NULL, " + COLUMN_USER_TYPE + " TEXT NOT NULL);";
 
     private static final String SQL_CREATE_REQUESTER_TABLE = "create table " + TABLE_REQUESTER
             + "(" + COLUMN_REQUESTER_ID + " TEXT PRIMARY KEY, " + COLUMN_NAME + " TEXT NOT NULL, "
@@ -65,7 +65,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + "(" + COLUMN_SKILL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_SKILL_TYPE + " TEXT NOT NULL);";
 
 
-    public DatabaseHelper(Context mContext) {
+    DatabaseHelper(Context mContext) {
         super(mContext, DB_NAME, null, DB_VERSION);
     }
 

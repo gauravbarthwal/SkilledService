@@ -20,14 +20,21 @@
     <string name="hint_confirm_password">Confirm Password</string>
     <string name="have_an_account">Have an account?</string>
 
+   <!--Skills Fragment-->
+    <string name="select_your_skill">Select your skill</string>
+
     <!--Actions/Button-->
     <string name="action_login">Login</string>
     <string name="action_signup">SignUp</string>
+    <string name="action_close">Close</string>
+    <string name="action_save">Save</string>
 
     <!--error string-->
     <string name="error_oops_something_went_wrong">Oops!! Something went wrong.</string>
     <string name="error_please_enter_proper_name">Please enter proper name.</string>
+    <string name="error_username_already_exists">Username already exists.</string>
     <string name="error_username_length">Username should be 6\-16 characters long.</string>
     <string name="error_password_length">Password should be 6\-16 characters long.</string>
     <string name="error_confirm_password">Password does not match.</string>
+    <string name="error_registration_failed">Registration failed!!</string>
 </resources>
