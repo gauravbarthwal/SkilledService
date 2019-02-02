@@ -28,13 +28,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     static final String COLUMN_WORKER_ID = "worker_id";
 
-    static final String COLUMN_TASK_ID = "task_id";
-    static final String COLUMN_TASK_DESCRIPTION = "task_description";
-    static final String COLUMN_TASK_SKILL = "task_skill";
-    static final String COLUMN_TASK_FROM = "task_from";
-    static final String COLUMN_TASK_TO = "task_to";
-    static final String COLUMN_TASK_STATUS = "task_status";
-    static final String COLUMN_TASK_RATING = "task_rating";
+    public static final String COLUMN_TASK_ID = "task_id";
+    public static final String COLUMN_TASK_DESCRIPTION = "task_description";
+    public static final String COLUMN_TASK_SKILL = "task_skill";
+    public static final String COLUMN_TASK_FROM = "task_from";
+    public static final String COLUMN_TASK_TO = "task_to";
+    public static final String COLUMN_TASK_STATUS = "task_status";
+    public static final String COLUMN_TASK_RATING = "task_rating";
 
     public static final String COLUMN_SKILL_ID = "skill_id";
     public static final String COLUMN_SKILL_TYPE = "skill_type";

@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.provider.Settings;
 
-import com.servicenow.skilledserviceapp.R;
+import com.servicenow.skilledserviceapp.data.model.TaskType;
 import com.servicenow.skilledserviceapp.utils.Constants;
 import com.servicenow.skilledserviceapp.utils.LogUtils;
 import com.servicenow.skilledserviceapp.utils.PreferenceUtils;
@@ -140,10 +140,14 @@ public class DatabaseManager {
     public Cursor loginUser(String userName, String userPassword) {
         try {
             String rawQuery;
-            rawQuery = "SELECT " + DatabaseHelper.COLUMN_USER_ID + ", " + DatabaseHelper.COLUMN_USER_TYPE + " FROM " + DatabaseHelper.TABLE_USER
-                    + " WHERE " + DatabaseHelper.COLUMN_USER_NAME + "=" + userName + " AND " + DatabaseHelper.COLUMN_USER_PASSWORD + "=" + userPassword;
+            rawQuery = "SELECT * FROM " + DatabaseHelper.TABLE_USER
+                    + " WHERE " + DatabaseHelper.COLUMN_USER_NAME + "='" + userName + "' AND " + DatabaseHelper.COLUMN_USER_PASSWORD + "='" + userPassword +"'";
             LogUtils.d(TAG, "#loginUser#query ::" + rawQuery);
             Cursor mCursor = mSqLiteDatabase.rawQuery(rawQuery, null);
+
+            /*String[] columns = new String[]{DatabaseHelper.COLUMN_USER_ID, DatabaseHelper.COLUMN_USER_NAME, DatabaseHelper.COLUMN_USER_TYPE};
+            Cursor mCursor = mSqLiteDatabase.query(DatabaseHelper.TABLE_USER, columns, DatabaseHelper.COLUMN_USER_NAME + "=?," + DatabaseHelper.COLUMN_USER_PASSWORD + "=?",
+                    new String[]{userName,userPassword}, null, null, null);*/
             if (mCursor != null) {
                 mCursor.moveToFirst();
             }
@@ -205,12 +209,15 @@ public class DatabaseManager {
      *
      * @return - {@link Cursor}
      */
-    public Cursor getTaskInfo() {
+    public Cursor getTaskInfo(TaskType mTaskType) {
         try {
             String rawQuery;
-            String userId = PreferenceUtils.getInstance(mContext).getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
-            rawQuery = "SELECT * FROM " + DatabaseHelper.TABLE_TASK
-                    + " WHERE " + userId + "=" + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_FROM;
+            PreferenceUtils mPreferenceUtils = PreferenceUtils.getInstance(mContext);
+            String userId = mPreferenceUtils.getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
+            boolean isRequester = mPreferenceUtils.getBooleanPreference(Constants.PREF_KEY_IS_REQUESTER);
+            rawQuery = "SELECT * FROM " + DatabaseHelper.TABLE_TASK + ", " + DatabaseHelper.TABLE_SKILL
+                    + " WHERE " + DatabaseHelper.TABLE_TASK + "." + (isRequester ? DatabaseHelper.COLUMN_TASK_FROM : DatabaseHelper.COLUMN_TASK_TO) + "= '" + userId + "' "
+            + " AND " + DatabaseHelper.COLUMN_TASK_STATUS + " = '" + mTaskType.getValue()+"'";
             LogUtils.d(TAG, "#getLoggedInUserData#query ::" + rawQuery);
             Cursor mCursor = mSqLiteDatabase.rawQuery(rawQuery, null);
             if (mCursor != null) {

@@ -27,6 +27,7 @@
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/margin_8"
         android:layout_marginTop="@dimen/margin_62"
+        android:scrollbars="none"
         android:layout_marginEnd="@dimen/margin_8"
         android:layout_marginBottom="@dimen/margin_82"
         android:background="@drawable/bg_login_layout"

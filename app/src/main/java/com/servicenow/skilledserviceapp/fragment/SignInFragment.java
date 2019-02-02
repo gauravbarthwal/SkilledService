@@ -15,19 +15,24 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.servicenow.skilledserviceapp.R;
 import com.servicenow.skilledserviceapp.activity.HelperActivity;
 import com.servicenow.skilledserviceapp.data.DatabaseHelper;
 import com.servicenow.skilledserviceapp.data.DatabaseManager;
 import com.servicenow.skilledserviceapp.utils.Constants;
+import com.servicenow.skilledserviceapp.utils.DialogType;
 import com.servicenow.skilledserviceapp.utils.NavigationHelper;
 import com.servicenow.skilledserviceapp.utils.PreferenceUtils;
+
+import java.util.HashMap;
 
 public class SignInFragment extends Fragment {
     public static final String TAG = SignInFragment.class.getSimpleName();
 
     private Activity mActivity;
+    private ProgressBar mProgressBar;
     private AppCompatButton mActionLogin;
     private AppCompatButton mActionSignUp;
 
@@ -57,6 +62,7 @@ public class SignInFragment extends Fragment {
      * @param mView - {@link Fragment}
      */
     private void initFragmentView(View mView) {
+        mProgressBar = mView.findViewById(R.id.progressBar);
         mInputUsernameLayout = mView.findViewById(R.id.input_layout_username);
         mInputPasswordLayout = mView.findViewById(R.id.input_layout_password);
 
@@ -65,6 +71,7 @@ public class SignInFragment extends Fragment {
 
         mActionLogin = mView.findViewById(R.id.action_login);
         mActionSignUp = mView.findViewById(R.id.action_signup);
+        mProgressBar.setVisibility(View.GONE);
     }
 
     /**
@@ -86,6 +93,7 @@ public class SignInFragment extends Fragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.action_login:
+                    mProgressBar.setVisibility(View.VISIBLE);
                     if (isValidated()) {
                         DatabaseManager manager = new DatabaseManager(mActivity);
                         manager.openDatabase();
@@ -98,10 +106,16 @@ public class SignInFragment extends Fragment {
                             String userType = mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_USER_TYPE));
                             if (userType != null && !userType.isEmpty())
                                 PreferenceUtils.getInstance(mActivity).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER, userType.equalsIgnoreCase(Constants.USER_REQUESTER));
+                            manager.closeDatabase();
+                            mProgressBar.setVisibility(View.GONE);
+                            NavigationHelper.navigateToHome(getActivity());
+                        } else {
+                            final HashMap<String, String> inputMap = new HashMap<>();
+                            inputMap.put(Constants.DIALOG_KEY_MESSAGE, getString(R.string.error_oops_something_went_wrong));
+                            NavigationHelper.showDialog(getActivity(), DialogType.DIALOG_FAILURE, inputMap, null);
+                            mProgressBar.setVisibility(View.GONE);
                         }
-                        manager.closeDatabase();
-                        NavigationHelper.navigateToHome(getActivity());
-                    }
+                    } else mProgressBar.setVisibility(View.GONE);
                     break;
                 case R.id.action_signup:
                     if (mActivity != null && mActivity instanceof HelperActivity) {
