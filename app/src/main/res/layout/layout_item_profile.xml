@@ -1,14 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.AppCompatTextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/margin_62"
     android:background="@color/off_white"
-    android:layout_margin="@dimen/margin_6"
-    android:padding="@dimen/margin_6"
-    android:gravity="center_vertical"
-    style="@style/style_heading_label"
-    android:textSize="@dimen/text_size_16"
-    android:textStyle="normal">
+    android:layout_marginTop="@dimen/margin_2"
+    android:elevation="@dimen/elevation_5"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="horizontal">
 
-</android.support.v7.widget.AppCompatTextView>
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/profileItemIcon"
+        android:layout_width="@dimen/margin_24"
+        android:layout_height="@dimen/margin_24"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/margin_12"
+        android:layout_marginEnd="@dimen/margin_12"
+        android:src="@drawable/ic_logout"/>
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/profileItemTitle"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/off_white"
+        android:layout_margin="@dimen/margin_6"
+        android:padding="@dimen/margin_6"
+        android:layout_gravity="center_vertical"
+        style="@style/style_heading_label"
+        android:textSize="@dimen/text_size_16"
+        android:textStyle="normal">
+
+    </android.support.v7.widget.AppCompatTextView>
+
+</LinearLayout>

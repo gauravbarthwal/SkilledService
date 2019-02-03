@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -105,10 +106,16 @@ public class ProfileFragment extends Fragment {
                 mProfileHeaderViewAdapter.mUserName.setText(userName);
                 mProfileHeaderViewAdapter.mUserRating.setText(""+userRating);
             } else if (viewHolder instanceof ProfileItemViewAdapter) {
+                ProfileItemViewAdapter holder = (ProfileItemViewAdapter) viewHolder;
                 String profileItem = profileItems[i];
-                if (profileItem.equalsIgnoreCase("App Version"))
+                if (profileItem.equalsIgnoreCase("App Version")) {
                     profileItem = profileItem + " : " + BuildConfig.VERSION_NAME;
-                ((ProfileItemViewAdapter) viewHolder).mProfileItem.setText(profileItem);
+                    holder.mProfileItemIcon.setVisibility(View.GONE);
+                } else {
+                    holder.mProfileItemIcon.setImageResource(R.drawable.ic_logout);
+                    holder.mProfileItemIcon.setVisibility(View.VISIBLE);
+                }
+                holder.mProfileItemTitle.setText(profileItem);
             }
         }
 
@@ -133,15 +140,17 @@ public class ProfileFragment extends Fragment {
         }
 
         class ProfileItemViewAdapter extends RecyclerView.ViewHolder {
-            private AppCompatTextView mProfileItem;
+            private AppCompatTextView mProfileItemTitle;
+            private AppCompatImageView mProfileItemIcon;
 
             ProfileItemViewAdapter(@NonNull final View itemView) {
                 super(itemView);
-                mProfileItem = (AppCompatTextView) itemView;
+                mProfileItemTitle = itemView.findViewById(R.id.profileItemTitle);
+                mProfileItemIcon = itemView.findViewById(R.id.profileItemIcon);
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (mProfileItem.getText().toString().equalsIgnoreCase("Logout")) {
+                        if (mProfileItemTitle.getText().toString().equalsIgnoreCase("Logout")) {
                             PreferenceUtils.getInstance(mActivity).setStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID, "");
                             PreferenceUtils.getInstance(mActivity).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER, false);
                             NavigationHelper.navigateToLogin(getActivity());

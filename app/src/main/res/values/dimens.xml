@@ -12,6 +12,7 @@
     <dimen name="item_skills_height">65dp</dimen>
 
     <!--margin/paddings-->
+    <dimen name="margin_2">2dp</dimen>
     <dimen name="margin_6">6dp</dimen>
     <dimen name="margin_8">8dp</dimen>
     <dimen name="margin_12">12dp</dimen>

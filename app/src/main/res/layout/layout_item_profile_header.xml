@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@color/off_white"
     android:padding="@dimen/margin_6"
+    android:elevation="@dimen/elevation_5"
     android:orientation="horizontal">
 
     <android.support.v7.widget.AppCompatImageView
