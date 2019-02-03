@@ -19,6 +19,7 @@
     <dimen name="margin_16">16dp</dimen>
     <dimen name="margin_24">24dp</dimen>
     <dimen name="margin_32">32dp</dimen>
+    <dimen name="margin_42">42dp</dimen>
     <dimen name="margin_62">62dp</dimen>
     <dimen name="margin_82">82dp</dimen>
     <dimen name="margin_100">100dp</dimen>
@@ -37,4 +38,12 @@
     <dimen name="action_signin_height">60dp</dimen>
     <dimen name="action_width_small">50dp</dimen>
     <dimen name="action_height_small">30dp</dimen>
+
+    <!--card task-->
+    <dimen name="card_task_width">200dp</dimen>
+    <dimen name="card_task_height">112.5dp</dimen>
+
+    <!--card worker-->
+    <dimen name="card_worker_width">240dp</dimen>
+    <dimen name="card_worker_height">135dp</dimen>
 </resources>

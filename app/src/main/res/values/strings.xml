@@ -29,6 +29,9 @@
    <!--Skills Fragment-->
     <string name="select_your_skill">Select your skill</string>
 
+    <!--Request Task Fragment-->
+    <string name="request_service">Request a service</string>
+
     <!--Actions/Button-->
     <string name="action_login">Login</string>
     <string name="action_signup">SignUp</string>
@@ -43,4 +46,7 @@
     <string name="error_password_length">Password should be 6\-16 characters long.</string>
     <string name="error_confirm_password">Password does not match.</string>
     <string name="error_registration_failed">Registration failed!!</string>
+
+    <!--Task Card-->
+    <string name="request_new_task">Request a task</string>
 </resources>

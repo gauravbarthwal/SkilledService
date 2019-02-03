@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/heading"
+        style="@style/style_heading_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_color"
+        android:elevation="@dimen/elevation_5"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/request_service"
+        android:textAlignment="center"
+        android:textSize="@dimen/text_size_22" />
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_below="@id/heading"
+        android:id="@+id/skillRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/margin_8"
+        android:layout_marginTop="@dimen/margin_6"
+        android:scrollbars="none"
+        android:layout_marginEnd="@dimen/margin_8"
+        android:layout_marginBottom="@dimen/margin_6"
+        android:background="@drawable/bg_login_layout"
+        android:elevation="@dimen/elevation_5" />
+
+    <include layout="@layout/layout_progress"/>
+
+</RelativeLayout>

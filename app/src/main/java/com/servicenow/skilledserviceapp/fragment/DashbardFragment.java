@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.servicenow.skilledserviceapp.R;
 import com.servicenow.skilledserviceapp.data.DatabaseHelper;
@@ -22,6 +23,7 @@ import com.servicenow.skilledserviceapp.data.model.Skill;
 import com.servicenow.skilledserviceapp.data.model.Task;
 import com.servicenow.skilledserviceapp.data.model.TaskType;
 import com.servicenow.skilledserviceapp.utils.Constants;
+import com.servicenow.skilledserviceapp.utils.NavigationHelper;
 
 import java.util.ArrayList;
 
@@ -31,6 +33,7 @@ public class DashbardFragment extends Fragment {
     private ArrayList<Task> mTaskArrayList = new ArrayList<>();
     private ArrayList<Skill> mSkillArrayList = new ArrayList<>();
 
+    private DashboardAdapter mDashboardAdapter;
     private SkillAdapter mSkillAdapter;
     private int skillItemSelectedColor;
     private int skillItemDefaultColor;
@@ -63,6 +66,8 @@ public class DashbardFragment extends Fragment {
         mDashboardRecyclerview = mView.findViewById(R.id.dashboardRecyclerView);
         mDashboardRecyclerview.setHasFixedSize(true);
         mDashboardRecyclerview.setLayoutManager(new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false));
+        mDashboardAdapter = new DashboardAdapter();
+        mDashboardRecyclerview.setAdapter(mDashboardAdapter);
     }
 
     /**
@@ -91,6 +96,8 @@ public class DashbardFragment extends Fragment {
             manager.closeDatabase();
         } catch (Exception ignored) {
         }
+
+        mDashboardAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -113,7 +120,7 @@ public class DashbardFragment extends Fragment {
             manager.closeDatabase();
         } catch (Exception ignored) {
         }
-        mSkillAdapter.notifyDataSetChanged();
+        //mSkillAdapter.notifyDataSetChanged();
     }
 
 
@@ -137,6 +144,7 @@ public class DashbardFragment extends Fragment {
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
             if (viewHolder instanceof TaskSectionViewHolder) {
                 TaskSectionViewHolder _holder = (TaskSectionViewHolder) viewHolder;
+                _holder.mTaskRecyclerView.setAdapter(new TaskAdapter());
             } else if (viewHolder instanceof SkillSectionViewHolder) {
                 SkillSectionViewHolder _holder = (SkillSectionViewHolder) viewHolder;
             }
@@ -220,6 +228,73 @@ public class DashbardFragment extends Fragment {
                         itemView.setBackgroundColor(skillItemSelectedColor);
                         selectedSkillId = mSkillArrayList.get(getAdapterPosition()).getSkillId();
                         previousSelectedItem = itemView;
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * Adapter to show skills
+     */
+    private class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private final int NEW_TASK = 0;
+
+        @NonNull
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+            if (getItemViewType(i) == NEW_TASK) {
+                View view = LayoutInflater.from(mActivity).inflate(R.layout.card_new_task, viewGroup, false);
+                return new NewTaskViewHolder(view);
+            } else {
+                View view = LayoutInflater.from(mActivity).inflate(R.layout.card_current_task, viewGroup, false);
+                return new CurrentTaskViewHolder(view);
+            }
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+            if (viewHolder instanceof NewTaskViewHolder) {
+                NewTaskViewHolder mNewTaskViewHolder = (NewTaskViewHolder) viewHolder;
+                //Task mTask = mTaskArrayList.get(i);
+            } else {
+                CurrentTaskViewHolder mCurrentTaskViewHolder = (CurrentTaskViewHolder) viewHolder;
+
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return mTaskArrayList.size();
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position == 0 ? NEW_TASK : 1;
+        }
+
+        class NewTaskViewHolder extends RecyclerView.ViewHolder {
+
+            NewTaskViewHolder(@NonNull final View itemView) {
+                super(itemView);
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //Toast.makeText(mActivity, "New task", Toast.LENGTH_SHORT).show();
+                        NavigationHelper.navigateToRequestNewTaskFragment(getActivity());
+                    }
+                });
+            }
+        }
+
+        class CurrentTaskViewHolder extends RecyclerView.ViewHolder {
+
+            CurrentTaskViewHolder(@NonNull final View itemView) {
+                super(itemView);
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(mActivity, "New task", Toast.LENGTH_SHORT).show();
                     }
                 });
             }

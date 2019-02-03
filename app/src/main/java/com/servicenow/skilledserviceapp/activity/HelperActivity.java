@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
 import com.servicenow.skilledserviceapp.R;
+import com.servicenow.skilledserviceapp.fragment.RequestNewTaskFragment;
 import com.servicenow.skilledserviceapp.fragment.SignInFragment;
 import com.servicenow.skilledserviceapp.fragment.SignUpFragment;
 import com.servicenow.skilledserviceapp.fragment.SkillsFragment;
@@ -33,6 +34,9 @@ public class HelperActivity extends FragmentActivity {
         }
     }
 
+    /**
+     * loads fragment
+     */
     private void loadFragment() {
         switch (mNavigationType) {
             case NAV_LOGIN:
@@ -48,6 +52,11 @@ public class HelperActivity extends FragmentActivity {
             case NAV_SKILLS_FRAGMENT:
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_frame, new SkillsFragment())
+                        .commit();
+                break;
+             case NAV_REQUEST_TASK:
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_frame, new RequestNewTaskFragment())
                         .commit();
                 break;
         }

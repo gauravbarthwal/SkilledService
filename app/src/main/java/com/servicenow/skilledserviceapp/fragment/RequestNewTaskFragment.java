@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,23 +21,15 @@ import com.servicenow.skilledserviceapp.data.DatabaseHelper;
 import com.servicenow.skilledserviceapp.data.DatabaseManager;
 import com.servicenow.skilledserviceapp.data.model.Skill;
 import com.servicenow.skilledserviceapp.utils.Constants;
-import com.servicenow.skilledserviceapp.utils.DialogType;
-import com.servicenow.skilledserviceapp.utils.NavigationHelper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-/**
- * fragment to ask skills for a worker
- */
-public class SkillsFragment extends Fragment {
-    private static final String TAG = SkillsFragment.class.getSimpleName();
+public class RequestNewTaskFragment extends Fragment {
 
     private Activity mActivity;
     private ProgressBar mProgressBar;
     private RecyclerView mSkillRecyclerView;
     private SkillAdapter mSkillAdapter;
-    private AppCompatButton mActionSave;
 
     private ArrayList<Skill> mSkillArrayList = new ArrayList<>();
 
@@ -46,36 +37,6 @@ public class SkillsFragment extends Fragment {
     private int skillItemDefaultColor;
 
     private int selectedSkillId = -1;
-
-    /**
-     * click listener for mActionLogin
-     */
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.action_save:
-                    mProgressBar.setVisibility(View.VISIBLE);
-                    try {
-                        DatabaseManager manager = new DatabaseManager(mActivity);
-                        manager.openDatabase();
-                        if (manager.updateSkill(selectedSkillId)) {
-                            manager.closeDatabase();
-                            NavigationHelper.navigateToHome(getActivity());
-                            mActivity.finish();
-                        } else {
-                            manager.closeDatabase();
-                            final HashMap<String, String> inputMap = new HashMap<>();
-                            inputMap.put(Constants.DIALOG_KEY_MESSAGE, getString(R.string.error_oops_something_went_wrong));
-                            NavigationHelper.showDialog(getActivity(), DialogType.DIALOG_FAILURE, inputMap, null);
-                        }
-                    } catch (Exception ignored) {
-                    }
-                    mProgressBar.setVisibility(View.GONE);
-                    break;
-            }
-        }
-    };
 
     @Override
     public void onAttach(Context context) {
@@ -88,7 +49,7 @@ public class SkillsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View mFragmentView = inflater.inflate(R.layout.fragment_skills, container, false);
+        View mFragmentView = inflater.inflate(R.layout.fragment_request_new_task, container, false);
         initFragmentView(mFragmentView);
         setUpListener();
         requestSkillList();
@@ -107,14 +68,14 @@ public class SkillsFragment extends Fragment {
         mSkillRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false));
         mSkillAdapter = new SkillAdapter();
         mSkillRecyclerView.setAdapter(mSkillAdapter);
-        mActionSave = mView.findViewById(R.id.action_save);
+        mProgressBar.setVisibility(View.GONE);
     }
 
     /**
      * sets up listeners
      */
     private void setUpListener() {
-        mActionSave.setOnClickListener(onClickListener);
+
     }
 
     /**

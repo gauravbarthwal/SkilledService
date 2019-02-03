@@ -8,6 +8,7 @@ import android.view.MenuItem;
 
 import com.servicenow.skilledserviceapp.R;
 import com.servicenow.skilledserviceapp.data.DatabaseManager;
+import com.servicenow.skilledserviceapp.fragment.DashbardFragment;
 import com.servicenow.skilledserviceapp.fragment.ProfileFragment;
 import com.servicenow.skilledserviceapp.utils.LogUtils;
 
@@ -35,6 +36,8 @@ public class MainActivity extends AppCompatActivity
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, new DashbardFragment()).commit();
     }
 
     private void addListeners() {
@@ -67,7 +70,9 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-         if (id == R.id.navigation_profile) {
+        if (id == R.id.navigation_dashboard) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, new DashbardFragment()).commit();
+        }else if (id == R.id.navigation_profile) {
             getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, new ProfileFragment()).commit();
         }
         return true;
