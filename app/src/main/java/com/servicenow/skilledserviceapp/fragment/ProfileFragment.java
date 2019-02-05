@@ -31,8 +31,10 @@ public class ProfileFragment extends Fragment {
     private RecyclerView mProfileRecyclerView;
     private ProfileAdapter mAdapter;
     private String[] profileItems = new String[]{"Header", "App Version", "Logout"};
+    private String[] preLoginProfileItems = new String[]{"App Version", "Login"};
     private String userName;
     private float userRating;
+    private String userId;
 
     @Override
     public void onAttach(Context context) {
@@ -40,12 +42,18 @@ public class ProfileFragment extends Fragment {
         mActivity = getActivity();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        requestUserInformationFromDB();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View mFragmentView = inflater.inflate(R.layout.fragment_profile, container, false);
         initFragmentView(mFragmentView);
-        requestUserInformationFromDB();
+        userId = PreferenceUtils.getInstance(mActivity).getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
         return mFragmentView;
     }
 
@@ -107,13 +115,21 @@ public class ProfileFragment extends Fragment {
                 mProfileHeaderViewAdapter.mUserRating.setText(""+userRating);
             } else if (viewHolder instanceof ProfileItemViewAdapter) {
                 ProfileItemViewAdapter holder = (ProfileItemViewAdapter) viewHolder;
-                String profileItem = profileItems[i];
+                String profileItem;
+                if (userId != null && !userId.isEmpty()) {
+                    profileItem = profileItems[i];
+                } else profileItem = preLoginProfileItems[i];
                 if (profileItem.equalsIgnoreCase("App Version")) {
                     profileItem = profileItem + " : " + BuildConfig.VERSION_NAME;
                     holder.mProfileItemIcon.setVisibility(View.GONE);
                 } else {
-                    holder.mProfileItemIcon.setImageResource(R.drawable.ic_logout);
-                    holder.mProfileItemIcon.setVisibility(View.VISIBLE);
+                    if (profileItem.equalsIgnoreCase("Logout")) {
+                        holder.mProfileItemIcon.setImageResource(R.drawable.ic_logout);
+                        holder.mProfileItemIcon.setVisibility(View.VISIBLE);
+                    } else {
+                        holder.mProfileItemIcon.setImageResource(R.drawable.ic_login);
+                        holder.mProfileItemIcon.setVisibility(View.VISIBLE);
+                    }
                 }
                 holder.mProfileItemTitle.setText(profileItem);
             }
@@ -121,12 +137,16 @@ public class ProfileFragment extends Fragment {
 
         @Override
         public int getItemViewType(int position) {
-            return position == 0 ? HEADER : PROFILE_ITEM;
+            if (userId != null && !userId.isEmpty() && position == 0)
+                return HEADER;
+            return PROFILE_ITEM;
         }
 
         @Override
         public int getItemCount() {
-            return profileItems.length;
+            if (userId != null && !userId.isEmpty()) {
+                return profileItems.length;
+            } else return preLoginProfileItems.length;
         }
 
         class ProfileHeaderViewAdapter extends RecyclerView.ViewHolder {
@@ -155,6 +175,8 @@ public class ProfileFragment extends Fragment {
                             PreferenceUtils.getInstance(mActivity).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER, false);
                             NavigationHelper.navigateToLogin(getActivity());
                             mActivity.finish();
+                        } else if (mProfileItemTitle.getText().toString().equalsIgnoreCase("Login")) {
+                            NavigationHelper.navigateToLogin(getActivity());
                         }
                     }
                 });

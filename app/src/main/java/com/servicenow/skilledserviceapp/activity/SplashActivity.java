@@ -29,8 +29,8 @@ public class SplashActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        String userId = PreferenceUtils.getInstance(SplashActivity.this).getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
-        if (userId != null && !userId.isEmpty()) {
+        //String userId = PreferenceUtils.getInstance(SplashActivity.this).getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
+        //if (userId != null && !userId.isEmpty()) {
             if (PreferenceUtils.getInstance(SplashActivity.this).getBooleanPreference(Constants.PREF_KEY_IS_REQUESTER))
                 NavigationHelper.navigateToHome(SplashActivity.this);
             else {
@@ -50,9 +50,9 @@ public class SplashActivity extends AppCompatActivity {
                     NavigationHelper.navigateToSkillsFragment(SplashActivity.this);
                 } else NavigationHelper.navigateToHome(SplashActivity.this);
             }
-        } else {
-            NavigationHelper.navigateToLogin(SplashActivity.this);
-        }
+        //} else {
+          //  NavigationHelper.navigateToLogin(SplashActivity.this);
+        //}
 
         finish();
     }

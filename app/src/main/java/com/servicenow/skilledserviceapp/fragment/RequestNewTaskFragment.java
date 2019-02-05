@@ -22,6 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.servicenow.skilledserviceapp.R;
+import com.servicenow.skilledserviceapp.activity.SplashActivity;
 import com.servicenow.skilledserviceapp.data.DatabaseHelper;
 import com.servicenow.skilledserviceapp.data.DatabaseManager;
 import com.servicenow.skilledserviceapp.data.model.Skill;
@@ -33,6 +34,7 @@ import com.servicenow.skilledserviceapp.utils.DialogType;
 import com.servicenow.skilledserviceapp.utils.LogUtils;
 import com.servicenow.skilledserviceapp.utils.NavigationHelper;
 import com.servicenow.skilledserviceapp.utils.NavigationType;
+import com.servicenow.skilledserviceapp.utils.PreferenceUtils;
 import com.servicenow.skilledserviceapp.utils.adapters.SkillAdapter;
 
 import java.util.ArrayList;
@@ -299,33 +301,38 @@ public class RequestNewTaskFragment extends Fragment implements SkillAdapter.Ski
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        try {
-                            Worker mWorker = mWorkerArrayList.get(getAdapterPosition());
-                            if (mAlreadyRequestedWorkers.size() > 0 && mAlreadyRequestedWorkers.contains(mWorker.getWorkerId())) {
-                                final HashMap<String, String> inputMap = new HashMap<>();
-                                inputMap.put(Constants.DIALOG_KEY_MESSAGE, getString(R.string.error_already_sent_request));
-                                NavigationHelper.showDialog(getActivity(), DialogType.DIALOG_FAILURE, inputMap, null);
-                            } else {
-                                DatabaseManager manager = new DatabaseManager(mActivity);
-                                manager.openDatabase();
-                                if (!manager.sendRequestOfTask(mWorker.getSkillId(), mWorker.getWorkerId())) {
+                        String userId = PreferenceUtils.getInstance(mActivity).getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
+                        if (userId != null && !userId.isEmpty()) {
+                            try {
+                                Worker mWorker = mWorkerArrayList.get(getAdapterPosition());
+                                if (mAlreadyRequestedWorkers.size() > 0 && mAlreadyRequestedWorkers.contains(mWorker.getWorkerId())) {
                                     final HashMap<String, String> inputMap = new HashMap<>();
-                                    inputMap.put(Constants.DIALOG_KEY_MESSAGE, getString(R.string.error_oops_something_went_wrong));
+                                    inputMap.put(Constants.DIALOG_KEY_MESSAGE, getString(R.string.error_already_sent_request));
                                     NavigationHelper.showDialog(getActivity(), DialogType.DIALOG_FAILURE, inputMap, null);
                                 } else {
-                                    final HashMap<String, String> inputMap = new HashMap<>();
-                                    inputMap.put(Constants.DIALOG_KEY_MESSAGE, getString(R.string.request_has_been_sent));
-                                    NavigationHelper.showDialog(getActivity(), DialogType.DIALOG_SUCCESS, inputMap, new DialogListener() {
-                                        @Override
-                                        public void onButtonClicked(Button action) {
-                                            mActivity.finish();
-                                        }
-                                    });
+                                    DatabaseManager manager = new DatabaseManager(mActivity);
+                                    manager.openDatabase();
+                                    if (!manager.sendRequestOfTask(mWorker.getSkillId(), mWorker.getWorkerId())) {
+                                        final HashMap<String, String> inputMap = new HashMap<>();
+                                        inputMap.put(Constants.DIALOG_KEY_MESSAGE, getString(R.string.error_oops_something_went_wrong));
+                                        NavigationHelper.showDialog(getActivity(), DialogType.DIALOG_FAILURE, inputMap, null);
+                                    } else {
+                                        final HashMap<String, String> inputMap = new HashMap<>();
+                                        inputMap.put(Constants.DIALOG_KEY_MESSAGE, getString(R.string.request_has_been_sent));
+                                        NavigationHelper.showDialog(getActivity(), DialogType.DIALOG_SUCCESS, inputMap, new DialogListener() {
+                                            @Override
+                                            public void onButtonClicked(Button action) {
+                                                mActivity.finish();
+                                            }
+                                        });
+                                    }
                                 }
+                            } catch (Exception e) {
+                                if (Constants.PRINT_LOGS)
+                                    e.printStackTrace();
                             }
-                        } catch (Exception e) {
-                            if (Constants.PRINT_LOGS)
-                                e.printStackTrace();
+                        } else {
+                            NavigationHelper.navigateToLogin(getActivity());
                         }
                     }
                 });
