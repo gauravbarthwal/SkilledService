@@ -160,7 +160,7 @@ public class SkillsFragment extends Fragment {
                 Skill mSkill = mSkillArrayList.get(i);
                 mSkillViewHolder.mSkillType.setText(mSkill.getSkillType());
                 mSkillViewHolder.mSkillType.setTag(mSkill.getSkillId());
-                mSkillViewHolder.mSkillImage.setImageResource(Constants.skillIconsArray[i]);
+                mSkillViewHolder.mSkillImage.setImageResource(Constants.getSkillIcon(mSkill.getSkillType()));
             }
         }
 

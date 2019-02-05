@@ -9,21 +9,38 @@ public class Constants {
     public static final String USER_WORKER = "Worker";
 
     /**
-     * array is being used to load icons
+     * method to get Skill image
+     * @param skillName - Skill name
+     * @return - Image id
      */
-    public static final int[] skillIconsArray = new int[]{
-            R.drawable.ic_barber,
-            R.drawable.ic_beautician,
-            R.drawable.ic_carpenter,
-            R.drawable.ic_cooker,
-            R.drawable.ic_electrician,
-            R.drawable.ic_house_cleaning,
-            R.drawable.ic_movers,
-            R.drawable.ic_painter,
-            R.drawable.ic_plumber,
-            R.drawable.ic_seamstrees,
-            R.drawable.ic_stylist
-    };
+    public static int getSkillIcon(String skillName) {
+        if (skillName != null && !skillName.isEmpty()) {
+            if (skillName.equalsIgnoreCase("Barber")) {
+                return R.drawable.ic_barber;
+            } else if (skillName.equalsIgnoreCase("Beautician")) {
+                return R.drawable.ic_beautician;
+            } else if (skillName.equalsIgnoreCase("Carpenter")) {
+                return R.drawable.ic_carpenter;
+            } else if (skillName.equalsIgnoreCase("Chef")) {
+                return R.drawable.ic_cooker;
+            } else if (skillName.equalsIgnoreCase("Electrician")) {
+                return R.drawable.ic_electrician;
+            } else if (skillName.equalsIgnoreCase("House Cleaning")) {
+                return R.drawable.ic_house_cleaning;
+            } else if (skillName.equalsIgnoreCase("Movers")) {
+                return R.drawable.ic_movers;
+            } else if (skillName.equalsIgnoreCase("Painter")) {
+                return R.drawable.ic_painter;
+            } else if (skillName.equalsIgnoreCase("Plumber")) {
+                return R.drawable.ic_plumber;
+            } else if (skillName.equalsIgnoreCase("Seamstress")) {
+                return R.drawable.ic_seamstrees;
+            } else if (skillName.equalsIgnoreCase("Stylist")) {
+                return R.drawable.ic_stylist;
+            }
+            return R.drawable.ic_home_black_24dp;
+        } return R.drawable.ic_home_black_24dp;
+    }
 
     /**
      * Preference keys
@@ -38,7 +55,9 @@ public class Constants {
     public static final String KEY_LOAD_FRAGMENT = "key_load_fragment";
     public static final String KEY_DIALOG_MAP = "key_dialog_map";
     public static final String KEY_DIALOG_TYPE = "key_dialog_type";
+    public static final String KEY_SKILL_ID = "key_skill_id";
 
     public static final String DIALOG_FAILURE = "dialog_failure";
+    public static final String DIALOG_SUCCESS = "dialog_success";
     public static final String DIALOG_KEY_MESSAGE = "dialog_key_message";
 }

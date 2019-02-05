@@ -3,6 +3,7 @@ package com.servicenow.skilledserviceapp.activity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
@@ -26,6 +27,15 @@ public class MainActivity extends AppCompatActivity
         initActivity();
         addListeners();
         loadUserInfo();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Fragment mFragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
+        if (mFragment != null && mFragment instanceof DashbardFragment) {
+            mFragment.onResume();
+        }
     }
 
     /**

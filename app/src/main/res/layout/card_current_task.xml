@@ -10,21 +10,67 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/margin_6">
+        android:gravity="center"
+        android:paddingStart="@dimen/margin_6">
 
         <android.support.v7.widget.AppCompatImageView
-            android:id="@+id/ongoingTaskImage"
-            android:layout_width="@dimen/margin_24"
-            android:layout_height="@dimen/margin_24"
-            android:src="@drawable/ic_barber" />
+            android:id="@+id/worker_avatar"
+            android:layout_width="@dimen/margin_42"
+            android:layout_height="@dimen/margin_42"
+            android:src="@drawable/ic_worker" />
 
-        <android.support.v7.widget.AppCompatTextView
-            style="@style/style_heading_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="@dimen/margin_6"
-            android:text="@string/request_new_task" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/margin_62"
+            android:layout_marginStart="@dimen/margin_8"
+            android:layout_toEndOf="@id/worker_avatar"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/worker_name"
+                style="@style/style_heading_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="Gaurav Barthwal"
+                android:textSize="@dimen/text_size_20" />
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/worker_rating"
+                style="@style/style_heading_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_6"
+                android:maxLines="2"
+                android:text="Ratings: 4/5"
+                android:textSize="@dimen/text_size_20" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/margin_32"
+            android:layout_below="@id/worker_avatar"
+            android:layout_marginStart="@dimen/margin_8"
+            android:layout_marginTop="@dimen/margin_12"
+            android:orientation="horizontal">
+
+            <android.support.v7.widget.AppCompatTextView
+                style="@style/style_heading_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:maxLines="1"
+                android:text="Skill :"
+                android:textSize="@dimen/text_size_18" />
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/worker_skill"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/margin_12"
+                android:src="@drawable/ic_barber" />
+        </LinearLayout>
 
     </RelativeLayout>
 

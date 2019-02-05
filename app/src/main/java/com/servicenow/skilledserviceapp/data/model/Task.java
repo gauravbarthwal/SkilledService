@@ -17,12 +17,20 @@ public class Task {
         this.taskDescription = taskDescription;
     }
 
-    public String getTaskRequiredSkill() {
-        return taskRequiredSkill;
+    public int getTaskRequiredSkillId() {
+        return taskRequiredSkillId;
     }
 
-    public void setTaskRequiredSkill(String taskRequiredSkill) {
-        this.taskRequiredSkill = taskRequiredSkill;
+    public void setTaskRequiredSkillId(int taskRequiredSkillId) {
+        this.taskRequiredSkillId = taskRequiredSkillId;
+    }
+
+    public String getTaskRequiredSkillName() {
+        return taskRequiredSkillName;
+    }
+
+    public void setTaskRequiredSkillName(String taskRequiredSkillName) {
+        this.taskRequiredSkillName = taskRequiredSkillName;
     }
 
     public String getTaskFrom() {
@@ -49,6 +57,14 @@ public class Task {
         this.taskStatus = taskStatus;
     }
 
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public float getTaskRatings() {
         return taskRatings;
     }
@@ -59,10 +75,12 @@ public class Task {
 
     private int taskId;
     private String taskDescription;
-    private String taskRequiredSkill;
+    private int taskRequiredSkillId;
+    private String taskRequiredSkillName;
     private String taskFrom;
     private String taskTo;
     private String taskStatus;
+    private String createdAt;
     private float taskRatings;
 
 }

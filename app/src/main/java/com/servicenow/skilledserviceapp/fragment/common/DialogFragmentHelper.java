@@ -54,9 +54,42 @@ public class DialogFragmentHelper extends DialogFragment{
             switch (mDialogType) {
                 case DIALOG_FAILURE:
                     return dialogFailure();
+                case DIALOG_SUCCESS:
+                    return dialogSuccess();
             }
         }
 
+        return mDialog;
+    }
+
+    /**
+     * creates Success Message Dialog
+     * Constants.DIALOG_KEY_MESSAGE is being used to set alert message
+     *
+     * @return - {@link Dialog}
+     */
+    private Dialog dialogSuccess() {
+        mDialog = new Dialog(mActivity);
+        mDialog.setContentView(R.layout.dialog_success);
+        final AppCompatTextView mDialogMessage = mDialog.findViewById(R.id.alert_message);
+        final AppCompatButton mActionClose = mDialog.findViewById(R.id.action_close);
+        mActionClose.setTag(getString(R.string.action_close));
+        mActionClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDialogListener != null)
+                    mDialogListener.onButtonClicked(mActionClose);
+                dismiss();
+            }
+        });
+
+        if (inputHashMap != null) {
+            if (inputHashMap.containsKey(DIALOG_KEY_MESSAGE))
+                mDialogMessage.setText((CharSequence) inputHashMap.get(DIALOG_KEY_MESSAGE));
+        }
+
+        mDialog.setCancelable(false);
+        mDialog.setCanceledOnTouchOutside(false);
         return mDialog;
     }
 

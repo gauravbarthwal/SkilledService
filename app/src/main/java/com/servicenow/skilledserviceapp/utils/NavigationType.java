@@ -11,7 +11,8 @@ public enum NavigationType {
     NAV_LOGIN("nav_login"),
     NAV_SIGNUP("nav_signup"),
     NAV_SKILLS_FRAGMENT("nav_skills_fragment"),
-    NAV_REQUEST_TASK("nav_request_task");
+    NAV_REQUEST_TASK("nav_request_task"),
+    NAV_REQUEST_TASK_WITH_SKILL("nav_request_task_with_skill");
 
     private static Map<String, NavigationType> navigationTypeMap;
     private String value = "";

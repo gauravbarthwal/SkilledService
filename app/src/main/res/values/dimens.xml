@@ -46,4 +46,7 @@
     <!--card worker-->
     <dimen name="card_worker_width">240dp</dimen>
     <dimen name="card_worker_height">135dp</dimen>
+
+    <!--dialog worker info-->
+    <dimen name="dialog_worker_info_review_section_height"></dimen>
 </resources>

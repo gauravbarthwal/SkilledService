@@ -2,7 +2,9 @@ package com.servicenow.skilledserviceapp.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
 
 import com.servicenow.skilledserviceapp.R;
@@ -15,13 +17,15 @@ import com.servicenow.skilledserviceapp.utils.NavigationType;
 
 public class HelperActivity extends FragmentActivity {
     private NavigationType mNavigationType;
+    private Bundle mBundle;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_helper);
 
         try {
-            final Bundle mBundle = getIntent().getExtras();
+            mBundle = getIntent().getExtras();
             if (mBundle != null) {
                 if (mBundle.containsKey(Constants.KEY_LOAD_FRAGMENT))
                     mNavigationType = NavigationType.getNavigationType(mBundle.getString(Constants.KEY_LOAD_FRAGMENT));
@@ -31,6 +35,7 @@ public class HelperActivity extends FragmentActivity {
             loadFragment();
         else {
             Toast.makeText(HelperActivity.this, getString(R.string.error_oops_something_went_wrong), Toast.LENGTH_LONG).show();
+            return;
         }
     }
 
@@ -42,21 +47,28 @@ public class HelperActivity extends FragmentActivity {
             case NAV_LOGIN:
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_frame, new SignInFragment())
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                         .commit();
                 break;
             case NAV_SIGNUP:
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_frame, new SignUpFragment())
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                         .commit();
                 break;
             case NAV_SKILLS_FRAGMENT:
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_frame, new SkillsFragment())
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                         .commit();
                 break;
-             case NAV_REQUEST_TASK:
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_frame, new RequestNewTaskFragment())
+            case NAV_REQUEST_TASK_WITH_SKILL:
+            case NAV_REQUEST_TASK:
+                 RequestNewTaskFragment mRequestNewTaskFragment = new RequestNewTaskFragment();
+                 mRequestNewTaskFragment.setArguments(mBundle);
+                 getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_frame, mRequestNewTaskFragment)
+                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                         .commit();
                 break;
         }
@@ -67,8 +79,6 @@ public class HelperActivity extends FragmentActivity {
      */
     public void switchToSignInFragment() {
         getSupportFragmentManager().beginTransaction()
-                //.setCustomAnimations(R.anim.animation_slide_in, R.anim.animation_slide_out)
-                //.setCustomAnimations(R.anim.animation_fade_in, R.anim.animation_fade_out)
                 .replace(R.id.fragment_frame, new SignInFragment())
                 .commit();
     }
@@ -78,8 +88,6 @@ public class HelperActivity extends FragmentActivity {
      */
     public void switchToSignUpFragment() {
         getSupportFragmentManager().beginTransaction()
-                //.setCustomAnimations(R.anim.animation_slide_in, R.anim.animation_slide_out)
-                //.setCustomAnimations(R.anim.animation_fade_in, R.anim.animation_fade_out)
                 .replace(R.id.fragment_frame, new SignUpFragment())
                 .commit();
     }
@@ -89,9 +97,18 @@ public class HelperActivity extends FragmentActivity {
      */
     public void switchToSkillsFragment() {
         getSupportFragmentManager().beginTransaction()
-                //.setCustomAnimations(R.anim.animation_slide_in, R.anim.animation_slide_out)
-                //.setCustomAnimations(R.anim.animation_fade_in, R.anim.animation_fade_out)
                 .replace(R.id.fragment_frame, new SkillsFragment())
                 .commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Fragment mFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_frame);
+        if (mFragment != null && mFragment instanceof RequestNewTaskFragment) {
+            if (((RequestNewTaskFragment)mFragment).closeActivity()) {
+                super.onBackPressed();
+            }
+        } else
+            super.onBackPressed();
     }
 }

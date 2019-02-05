@@ -4,6 +4,7 @@
     android:layout_width="@dimen/card_worker_width"
     android:layout_height="@dimen/card_worker_height"
     android:elevation="@dimen/elevation_5"
+    android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
     app:cardCornerRadius="@dimen/corner_radius">
 
@@ -32,7 +33,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:text="Gaurav Barthwal"
                 android:textSize="@dimen/text_size_20" />
 
             <android.support.v7.widget.AppCompatTextView
@@ -42,11 +42,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_6"
                 android:maxLines="2"
-                android:text="Ratings: 4/5"
                 android:textSize="@dimen/text_size_20" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/skillLayout"
             android:layout_width="match_parent"
             android:layout_height="@dimen/margin_32"
             android:layout_below="@id/worker_avatar"
@@ -68,9 +68,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/margin_12"
-                android:src="@drawable/ic_barber" />
+                android:layout_marginStart="@dimen/margin_12" />
         </LinearLayout>
+
+        <include
+            android:layout_marginStart="@dimen/margin_8"
+            android:layout_marginTop="@dimen/margin_8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/skillLayout"
+            layout="@layout/layout_status_indicator"
+            android:id="@+id/indicatorLayout"/>
 
     </RelativeLayout>
 

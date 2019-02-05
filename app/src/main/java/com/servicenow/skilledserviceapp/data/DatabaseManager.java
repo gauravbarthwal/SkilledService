@@ -23,7 +23,7 @@ public class DatabaseManager {
             "Barber",
             "Beautician",
             "Carpenter",
-            "Cooker",
+            "Chef",
             "Electrician",
             "House Cleaning",
             "Movers",
@@ -54,12 +54,49 @@ public class DatabaseManager {
      */
     public void insertSkillsToDatabase() {
         try {
-            mSqLiteDatabase.execSQL("delete from " + DatabaseHelper.TABLE_SKILL);
-            ContentValues contentValue = new ContentValues();
-            for (int i =0; i <skills.length; i++) {
-                contentValue.put(DatabaseHelper.COLUMN_SKILL_TYPE, skills[i]);
-                //contentValue.put(DatabaseHelper.COLUMN_SKILL_ICON, skillIconsArray[i]);
-                mSqLiteDatabase.insert(DatabaseHelper.TABLE_SKILL, null, contentValue);
+            Cursor mCursor = mSqLiteDatabase.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_SKILL, null);
+            if (mCursor.getCount() == 0) {
+                ContentValues contentValue = new ContentValues();
+                for (int i = 0; i < skills.length; i++) {
+                    contentValue.put(DatabaseHelper.COLUMN_SKILL_TYPE, skills[i]);
+                    contentValue.put(DatabaseHelper.COLUMN_SKILL_ID, i + 1);
+                    mSqLiteDatabase.insert(DatabaseHelper.TABLE_SKILL, null, contentValue);
+                }
+            }
+        } catch (SQLException ignored) {
+        }
+    }
+
+    /**
+     * insert dummy data to table
+     */
+    public void insertDummyDataToDatabase() {
+        try {
+            Cursor mCursor = mSqLiteDatabase.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_WORKER, null);
+            if (mCursor.getCount() == 0) {
+                for (int i = 1; i <= 15; i++)
+                    insertUserData("worker" + i, "Worker" + i, "123456", Constants.USER_WORKER);
+
+                for (int i = 1; i <= 5; i++) {
+                    String userId = generateUserId("worker" + i);
+                    ContentValues workerContentValues = new ContentValues();
+                    workerContentValues.put(DatabaseHelper.COLUMN_SKILL_ID, 1);
+                    mSqLiteDatabase.update(DatabaseHelper.TABLE_WORKER, workerContentValues, DatabaseHelper.COLUMN_WORKER_ID + " = ?", new String[]{userId});
+                }
+
+                for (int i = 6; i <= 10; i++) {
+                    String userId = generateUserId("worker" + i);
+                    ContentValues workerContentValues = new ContentValues();
+                    workerContentValues.put(DatabaseHelper.COLUMN_SKILL_ID, 2);
+                    mSqLiteDatabase.update(DatabaseHelper.TABLE_WORKER, workerContentValues, DatabaseHelper.COLUMN_WORKER_ID + " = ?", new String[]{userId});
+                }
+
+                for (int i = 11; i < 16; i++) {
+                    String userId = generateUserId("worker" + i);
+                    ContentValues workerContentValues = new ContentValues();
+                    workerContentValues.put(DatabaseHelper.COLUMN_SKILL_ID, 3);
+                    mSqLiteDatabase.update(DatabaseHelper.TABLE_WORKER, workerContentValues, DatabaseHelper.COLUMN_WORKER_ID + " = ?", new String[]{userId});
+                }
             }
         } catch (SQLException ignored) {
         }
@@ -159,6 +196,38 @@ public class DatabaseManager {
     }
 
     /**
+     * store task information in table
+     * @param skillId - Skill id for the task
+     * @param workerId - worker id to whom request has been sent
+     * @return - true if inserted successfully else false
+     */
+    public boolean sendRequestOfTask(int skillId, String workerId) {
+        LogUtils.e(TAG, "#sendRequestOfTask#skillId :: " + skillId + " #workerId :: " + workerId );
+        try {
+            PreferenceUtils mPreferenceUtils = PreferenceUtils.getInstance(mContext);
+            String userId = mPreferenceUtils.getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
+            boolean isRequester = mPreferenceUtils.getBooleanPreference(Constants.PREF_KEY_IS_REQUESTER);
+            if (isRequester) {
+                ContentValues contentValue = new ContentValues();
+                contentValue.put(DatabaseHelper.COLUMN_TASK_SKILL, skillId);
+                contentValue.put(DatabaseHelper.COLUMN_TASK_FROM, userId);
+                contentValue.put(DatabaseHelper.COLUMN_TASK_TO, workerId);
+                contentValue.put(DatabaseHelper.COLUMN_TASK_STATUS, TaskType.TASK_PENDING.getValue());
+                contentValue.put(DatabaseHelper.COLUMN_TASK_RATING, 0f);
+                contentValue.put(DatabaseHelper.COLUMN_TASK_DESCRIPTION, "");
+                long inserted  = mSqLiteDatabase.insert(DatabaseHelper.TABLE_TASK, null, contentValue);
+                if (inserted > -1)
+                    return true;
+                else return false;
+            }
+        } catch (Exception e){
+            if (Constants.PRINT_LOGS)
+                e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * gets logged in user information
      *
      * @return - {@link Cursor}
@@ -205,20 +274,81 @@ public class DatabaseManager {
     }
 
     /**
+     * fetches all the skilled worked who are already got request
+     *
+     * @return - {@link Cursor}
+     */
+    public Cursor fetchAlreadyRequestedWorkers(int skillId) {
+        try {
+            String rawQuery;
+            PreferenceUtils mPreferenceUtils = PreferenceUtils.getInstance(mContext);
+            String userId = mPreferenceUtils.getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
+            rawQuery = "SELECT "+ DatabaseHelper.COLUMN_TASK_TO +" FROM " + DatabaseHelper.TABLE_TASK
+                    + " WHERE " + DatabaseHelper.COLUMN_TASK_SKILL + " = " + skillId
+                    + " AND " + DatabaseHelper.COLUMN_TASK_FROM +  " = '" + userId + "'"
+                    + " AND " + DatabaseHelper.COLUMN_TASK_STATUS + " NOT IN('" + TaskType.TASK_COMPLETED.getValue() +"')";
+            LogUtils.d(TAG, "#fetchAlreadyRequestedWorkers#query ::" + rawQuery);
+            Cursor mCursor = mSqLiteDatabase.rawQuery(rawQuery, null);
+            if (mCursor != null) {
+                mCursor.moveToFirst();
+            }
+            return mCursor;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * fetches all the skilled worked based on the skillId
+     *
+     * @return - {@link Cursor}
+     */
+    public Cursor fetchSkilledWorkerData(int skillId) {
+        try {
+            String rawQuery;
+            rawQuery = "SELECT * FROM " + DatabaseHelper.TABLE_WORKER + ", " + DatabaseHelper.TABLE_SKILL
+            + " WHERE " + DatabaseHelper.TABLE_WORKER + "." + DatabaseHelper.COLUMN_SKILL_ID + "=" + skillId
+                    + " AND " + DatabaseHelper.TABLE_WORKER + "." + DatabaseHelper.COLUMN_SKILL_ID +  " = " + DatabaseHelper.TABLE_SKILL + "." + DatabaseHelper.COLUMN_SKILL_ID
+                    + " ORDER BY " + DatabaseHelper.COLUMN_RATING + " DESC";
+            LogUtils.d(TAG, "#fetchSkilledWorkerData#query ::" + rawQuery);
+            Cursor mCursor = mSqLiteDatabase.rawQuery(rawQuery, null);
+            if (mCursor != null) {
+                mCursor.moveToFirst();
+            }
+            return mCursor;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * gets logged in user information
      *
      * @return - {@link Cursor}
      */
-    public Cursor getTaskInfo(TaskType mTaskType) {
+    public Cursor getTaskInfo() {
         try {
             String rawQuery;
             PreferenceUtils mPreferenceUtils = PreferenceUtils.getInstance(mContext);
             String userId = mPreferenceUtils.getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
             boolean isRequester = mPreferenceUtils.getBooleanPreference(Constants.PREF_KEY_IS_REQUESTER);
-            rawQuery = "SELECT * FROM " + DatabaseHelper.TABLE_TASK + ", " + DatabaseHelper.TABLE_SKILL
-                    + " WHERE " + DatabaseHelper.TABLE_TASK + "." + (isRequester ? DatabaseHelper.COLUMN_TASK_FROM : DatabaseHelper.COLUMN_TASK_TO) + "= '" + userId + "' "
-            + " AND " + DatabaseHelper.COLUMN_TASK_STATUS + " = '" + mTaskType.getValue()+"'";
-            LogUtils.d(TAG, "#getLoggedInUserData#query ::" + rawQuery);
+            LogUtils.d(TAG, "#getTaskInfo#isRequester ::" + isRequester);
+            if (isRequester) {
+                rawQuery = "SELECT * FROM " + DatabaseHelper.TABLE_TASK + " , " + DatabaseHelper.TABLE_SKILL + " , " + DatabaseHelper.TABLE_WORKER
+                        + " WHERE " + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_FROM + "= '" + userId + "' AND "
+                        + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_SKILL +"=" + DatabaseHelper.TABLE_SKILL + "." + DatabaseHelper.COLUMN_SKILL_ID + " AND "
+                        + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_TO + "=" + DatabaseHelper.TABLE_WORKER + "." + DatabaseHelper.COLUMN_WORKER_ID
+                        + " ORDER BY " + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_CREATED_AT + " DESC";
+            } else {
+                rawQuery = "SELECT * FROM " + DatabaseHelper.TABLE_TASK + " , " + DatabaseHelper.TABLE_SKILL + " , " + DatabaseHelper.TABLE_REQUESTER
+                        + " WHERE " + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_TO + "= '" + userId + "' AND "
+                        + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_SKILL +"=" + DatabaseHelper.TABLE_SKILL + "." + DatabaseHelper.COLUMN_SKILL_ID + " AND "
+                        + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_FROM + "=" + DatabaseHelper.TABLE_WORKER + "." + DatabaseHelper.COLUMN_REQUESTER_ID
+                        + " ORDER BY " + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_CREATED_AT + " DESC";
+            }
+            LogUtils.d(TAG, "#getTaskInfo#query ::" + rawQuery);
             Cursor mCursor = mSqLiteDatabase.rawQuery(rawQuery, null);
             if (mCursor != null) {
                 mCursor.moveToFirst();
@@ -274,7 +404,7 @@ public class DatabaseManager {
                     || Build.SERIAL.equalsIgnoreCase("unknown"))
                 return userName + Settings.Secure.getString(mContext.getContentResolver(),
                         Settings.Secure.ANDROID_ID);
-            return Build.SERIAL;
+            return userName + Build.SERIAL;
         } catch (Exception e) {
             return userName + System.currentTimeMillis();
         }

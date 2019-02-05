@@ -30,6 +30,25 @@
         android:background="@drawable/bg_login_layout"
         android:elevation="@dimen/elevation_5" />
 
+    <RelativeLayout
+        android:id="@+id/sendRequestLayout"
+        android:layout_below="@id/heading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:orientation="vertical">
+
+       <android.support.v7.widget.RecyclerView
+           android:id="@+id/workerRecyclerView"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:scrollbars="none"
+           android:padding="@dimen/margin_6"
+           android:layout_marginBottom="@dimen/margin_62"/>
+
+    </RelativeLayout>
+
+
     <include layout="@layout/layout_progress"/>
 
 </RelativeLayout>

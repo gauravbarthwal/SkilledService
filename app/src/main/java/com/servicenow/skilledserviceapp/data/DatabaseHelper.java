@@ -26,7 +26,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     static final String COLUMN_REQUESTER_ID = "requester_id";
 
-    static final String COLUMN_WORKER_ID = "worker_id";
+    public static final String COLUMN_WORKER_ID = "worker_id";
 
     public static final String COLUMN_TASK_ID = "task_id";
     public static final String COLUMN_TASK_DESCRIPTION = "task_description";
@@ -35,6 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TASK_TO = "task_to";
     public static final String COLUMN_TASK_STATUS = "task_status";
     public static final String COLUMN_TASK_RATING = "task_rating";
+    public static final String COLUMN_TASK_CREATED_AT = "task_created_at";
 
     public static final String COLUMN_SKILL_ID = "skill_id";
     public static final String COLUMN_SKILL_TYPE = "skill_type";
@@ -58,12 +59,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_SKILL_ID + " INTEGER, " + COLUMN_RATING + " REAL);";
 
     private static final String SQL_CREATE_TASK_TABLE = "create table " + TABLE_TASK
-            + "(" + COLUMN_TASK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_TASK_DESCRIPTION + " TEXT NOT NULL, "
+            + "(" + COLUMN_TASK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_TASK_DESCRIPTION + " TEXT, "
             + COLUMN_TASK_SKILL + " INTEGER NOT NULL, " + COLUMN_TASK_FROM + " TEXT NOT NULL, "
-            + COLUMN_TASK_TO + " TEXT NOT NULL," + COLUMN_TASK_STATUS + " TEXT NOT NULL," + COLUMN_TASK_RATING + " REAL);";
+            + COLUMN_TASK_TO + " TEXT NOT NULL," + COLUMN_TASK_STATUS + " TEXT NOT NULL," + COLUMN_TASK_RATING + " REAL ,"+ COLUMN_TASK_CREATED_AT  +" DATETIME DEFAULT CURRENT_TIMESTAMP);";
 
     private static final String SQL_CREATE_SKILL_TABLE = "create table " + TABLE_SKILL
-            + "(" + COLUMN_SKILL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_SKILL_TYPE + " TEXT NOT NULL,"+ COLUMN_SKILL_ICON +" INTEGER);";
+            + "(" + COLUMN_SKILL_ID + " INTEGER PRIMARY KEY, " + COLUMN_SKILL_TYPE + " TEXT NOT NULL);";
 
 
     DatabaseHelper(Context mContext) {

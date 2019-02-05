@@ -64,6 +64,18 @@ public class NavigationHelper {
     }
 
     /**
+     * navigates to {@link com.servicenow.skilledserviceapp.fragment.RequestNewTaskFragment}
+     * @param mFragmentActivity - {@link FragmentActivity}
+     */
+    public static void navigateToRequestNewTaskWithSkillsFragment(FragmentActivity mFragmentActivity, int requestedSkill) {
+        Intent mIntent = new Intent(mFragmentActivity, HelperActivity.class);
+        mIntent.putExtra(Constants.KEY_LOAD_FRAGMENT, NavigationType.NAV_REQUEST_TASK_WITH_SKILL.getValue());
+        mIntent.putExtra(Constants.KEY_SKILL_ID, requestedSkill);
+        mFragmentActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        mFragmentActivity.startActivity(mIntent);
+    }
+
+    /**
      * launches {@link DialogFragmentHelper}
      *
      * @param mContext        - {@link FragmentActivity}

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_login_layout"
+    android:padding="@dimen/margin_12">
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/worker_avatar"
+        android:layout_width="@dimen/margin_62"
+        android:layout_height="@dimen/margin_62"
+        android:src="@drawable/ic_worker" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_62"
+        android:layout_marginStart="@dimen/margin_8"
+        android:layout_toEndOf="@id/worker_avatar"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/worker_name"
+            style="@style/style_heading_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:text="Gaurav Barthwal"
+            android:textSize="@dimen/text_size_20" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/worker_rating"
+            style="@style/style_heading_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_6"
+            android:maxLines="2"
+            android:text="Ratings: 4/5"
+            android:textSize="@dimen/text_size_20" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/skillLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_32"
+        android:layout_below="@id/worker_avatar"
+        android:layout_marginStart="@dimen/margin_8"
+        android:layout_marginTop="@dimen/margin_12"
+        android:orientation="horizontal">
+
+        <android.support.v7.widget.AppCompatTextView
+            style="@style/style_heading_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:maxLines="1"
+            android:text="Skill :"
+            android:textSize="@dimen/text_size_18" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/worker_skill"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/margin_12"
+            android:src="@drawable/ic_barber" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_32"
+        android:layout_below="@id/skillLayout"
+        android:layout_marginStart="@dimen/margin_8"
+        android:layout_marginTop="@dimen/margin_12"
+        android:orientation="horizontal">
+
+        <android.support.v7.widget.AppCompatTextView
+            style="@style/style_heading_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:maxLines="1"
+            android:text="Reviews :"
+            android:textSize="@dimen/text_size_18" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/reviewRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none"
+            android:padding="@dimen/margin_6"
+            android:layout_marginTop="@dimen/margin_6"/>
+    </LinearLayout>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/action_send_request"
+        style="@style/style_action"
+        android:layout_width="match_parent"
+        android:layout_marginStart="@dimen/margin_8"
+        android:layout_marginEnd="@dimen/margin_8"
+        android:layout_marginBottom="@dimen/margin_8"
+        android:elevation="@dimen/elevation_5"
+        android:layout_alignParentBottom="true"
+        android:text="@string/action_send_request"
+        android:textSize="@dimen/text_size_18" />
+
+</RelativeLayout>

@@ -3,12 +3,11 @@ package com.servicenow.skilledserviceapp.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,9 +20,9 @@ import com.servicenow.skilledserviceapp.data.DatabaseHelper;
 import com.servicenow.skilledserviceapp.data.DatabaseManager;
 import com.servicenow.skilledserviceapp.data.model.Skill;
 import com.servicenow.skilledserviceapp.data.model.Task;
-import com.servicenow.skilledserviceapp.data.model.TaskType;
 import com.servicenow.skilledserviceapp.utils.Constants;
 import com.servicenow.skilledserviceapp.utils.NavigationHelper;
+import com.servicenow.skilledserviceapp.utils.adapters.SkillAdapter;
 
 import java.util.ArrayList;
 
@@ -40,12 +39,16 @@ public class DashbardFragment extends Fragment {
 
     private int selectedSkillId = -1;
 
+    private int taskCardPadding;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         mActivity = getActivity();
         skillItemDefaultColor = getResources().getColor(R.color.off_white);
         skillItemSelectedColor = getResources().getColor(R.color.colorPrimary);
+
+        taskCardPadding = getResources().getDimensionPixelOffset(R.dimen.margin_6);
     }
 
     @Nullable
@@ -53,9 +56,14 @@ public class DashbardFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View mFragmentView = inflater.inflate(R.layout.fragment_dashboard, container, false);
         initFragmentView(mFragmentView);
+        return mFragmentView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         getCurrentTaskInfo();
         requestSkillList();
-        return mFragmentView;
     }
 
     /**
@@ -75,26 +83,31 @@ public class DashbardFragment extends Fragment {
      */
     private void getCurrentTaskInfo() {
         try {
+            mTaskArrayList.clear();
             mTaskArrayList.add(new Task());
             DatabaseManager manager = new DatabaseManager(mActivity);
-            manager.closeDatabase();
-            Cursor mCursor = manager.getTaskInfo(TaskType.TASK_PENDING);
+            manager.openDatabase();
+            Cursor mCursor = manager.getTaskInfo();
             if (mCursor != null && mCursor.moveToFirst() && mCursor.getCount() > 0) {
                 do {
                     Task mTask = new Task();
                     mTask.setTaskId(mCursor.getInt(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_ID)));
-                    mTask.setTaskDescription(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_DESCRIPTION)));
+                    //mTask.setTaskDescription(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_DESCRIPTION)));
                     mTask.setTaskFrom(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_FROM)));
                     mTask.setTaskTo(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_TO)));
                     mTask.setTaskRatings(mCursor.getFloat(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_RATING)));
-                    mTask.setTaskRequiredSkill(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_SKILL_TYPE)));
+                    mTask.setTaskRequiredSkillId(mCursor.getInt(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_SKILL)));
+                    mTask.setTaskRequiredSkillName(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_SKILL_TYPE)));
                     mTask.setTaskStatus(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_STATUS)));
+                    mTask.setCreatedAt(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_CREATED_AT)));
                     mTaskArrayList.add(mTask);
                 } while (mCursor.moveToNext());
+                mCursor.close();
             }
-            mCursor.close();
             manager.closeDatabase();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            if (Constants.PRINT_LOGS)
+                e.printStackTrace();
         }
 
         mDashboardAdapter.notifyDataSetChanged();
@@ -105,6 +118,7 @@ public class DashbardFragment extends Fragment {
      */
     private void requestSkillList() {
         try {
+            mSkillArrayList.clear();
             DatabaseManager manager = new DatabaseManager(mActivity);
             manager.openDatabase();
             Cursor mCursor = manager.fetchSkillData();
@@ -115,8 +129,8 @@ public class DashbardFragment extends Fragment {
                     mSkill.setSkillType(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_SKILL_TYPE)));
                     mSkillArrayList.add(mSkill);
                 } while (mCursor.moveToNext());
+                mCursor.close();
             }
-            mCursor.close();
             manager.closeDatabase();
         } catch (Exception ignored) {
         }
@@ -167,6 +181,17 @@ public class DashbardFragment extends Fragment {
                 mTaskRecyclerView = (RecyclerView) itemView;
                 mTaskRecyclerView.setHasFixedSize(true);
                 mTaskRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false));
+                mTaskRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+
+                    @Override
+                    public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                        outRect.left = taskCardPadding;
+                        outRect.right = taskCardPadding;
+                        outRect.top = taskCardPadding;
+                        outRect.bottom = taskCardPadding;
+
+                    }
+                });
             }
         }
 
@@ -177,7 +202,23 @@ public class DashbardFragment extends Fragment {
                 mSkillRecyclerView = (RecyclerView) itemView;
                 mSkillRecyclerView.setHasFixedSize(true);
                 mSkillRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false));
-                mSkillAdapter = new SkillAdapter();
+                mSkillRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+
+                    @Override
+                    public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                        outRect.left = taskCardPadding;
+                        outRect.right = taskCardPadding;
+                        outRect.top = taskCardPadding;
+                        outRect.bottom = taskCardPadding;
+
+                    }
+                });
+                mSkillAdapter = new SkillAdapter(mActivity, mSkillArrayList, new SkillAdapter.SkillItemClickListener() {
+                    @Override
+                    public void onItemClick(Skill mSkill) {
+                        NavigationHelper.navigateToRequestNewTaskWithSkillsFragment(getActivity(), mSkill.getSkillId());
+                    }
+                });
                 mSkillRecyclerView.setAdapter(mSkillAdapter);
             }
         }
@@ -186,7 +227,7 @@ public class DashbardFragment extends Fragment {
     /**
      * Adapter to show skills
      */
-    private class SkillAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    /*private class SkillAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private View previousSelectedItem;
 
         @NonNull
@@ -203,7 +244,7 @@ public class DashbardFragment extends Fragment {
                 Skill mSkill = mSkillArrayList.get(i);
                 mSkillViewHolder.mSkillType.setText(mSkill.getSkillType());
                 mSkillViewHolder.mSkillType.setTag(mSkill.getSkillId());
-                mSkillViewHolder.mSkillImage.setImageResource(Constants.skillIconsArray[i]);
+                mSkillViewHolder.mSkillImage.setImageResource(Constants.getSkillIcon(mSkill.getSkillType()));
             }
         }
 
@@ -232,7 +273,7 @@ public class DashbardFragment extends Fragment {
                 });
             }
         }
-    }
+    }*/
 
     /**
      * Adapter to show skills
@@ -294,7 +335,7 @@ public class DashbardFragment extends Fragment {
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(mActivity, "New task", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mActivity, "Current TASK", Toast.LENGTH_SHORT).show();
                     }
                 });
             }

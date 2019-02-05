@@ -23,6 +23,7 @@ public class SplashActivity extends AppCompatActivity {
             DatabaseManager manager = new DatabaseManager(SplashActivity.this);
             manager.openDatabase();
             manager.insertSkillsToDatabase();
+            manager.insertDummyDataToDatabase();
             manager.closeDatabase();
         } catch (Exception e) {
             e.printStackTrace();

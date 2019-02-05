@@ -13,7 +13,7 @@
         android:layout_width="@dimen/margin_32"
         android:layout_height="@dimen/margin_32"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_error"/>
+        android:src="@drawable/ic_success"/>
 
     <android.support.v7.widget.AppCompatTextView
         android:layout_below="@id/alert_icon"
