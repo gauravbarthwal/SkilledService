@@ -29,7 +29,14 @@ public class SplashActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        //String userId = PreferenceUtils.getInstance(SplashActivity.this).getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
+        String userId = PreferenceUtils.getInstance(SplashActivity.this).getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
+        if (userId != null) {
+            PreferenceUtils.getInstance(SplashActivity.this).setStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID, "");
+            PreferenceUtils.getInstance(SplashActivity.this).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER, false);
+        } else if (userId.isEmpty()) {
+            PreferenceUtils.getInstance(SplashActivity.this).setStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID, "");
+            PreferenceUtils.getInstance(SplashActivity.this).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER, false);
+        }
         //if (userId != null && !userId.isEmpty()) {
             if (PreferenceUtils.getInstance(SplashActivity.this).getBooleanPreference(Constants.PREF_KEY_IS_REQUESTER))
                 NavigationHelper.navigateToHome(SplashActivity.this);

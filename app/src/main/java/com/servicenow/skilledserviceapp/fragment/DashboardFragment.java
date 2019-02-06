@@ -45,6 +45,7 @@ public class DashboardFragment extends Fragment {
     private int taskCardPadding;
 
     private boolean isRequester;
+    private String userId;
 
     @Override
     public void onAttach(Context context) {
@@ -56,6 +57,7 @@ public class DashboardFragment extends Fragment {
         taskCardPadding = getResources().getDimensionPixelOffset(R.dimen.margin_6);
 
         isRequester = PreferenceUtils.getInstance(context).getBooleanPreference(Constants.PREF_KEY_IS_REQUESTER);
+        userId = PreferenceUtils.getInstance(mActivity).getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
     }
 
     @Nullable
@@ -75,9 +77,10 @@ public class DashboardFragment extends Fragment {
 
     /**
      * initialize fragment view
+     *
      * @param mView - {@link Fragment}
      */
-    private void initFragmentView (View mView) {
+    private void initFragmentView(View mView) {
         mDashboardRecyclerview = mView.findViewById(R.id.dashboardRecyclerView);
         mDashboardRecyclerview.setHasFixedSize(true);
         mDashboardRecyclerview.setLayoutManager(new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false));
@@ -94,28 +97,30 @@ public class DashboardFragment extends Fragment {
     private void getCurrentTaskInfo() {
         try {
             mTaskArrayList.clear();
-            if (isRequester)
-                mTaskArrayList.add(new Task());
-            DatabaseManager manager = new DatabaseManager(mActivity);
-            manager.openDatabase();
-            Cursor mCursor = manager.getTaskInfo();
-            if (mCursor != null && mCursor.moveToFirst() && mCursor.getCount() > 0) {
-                do {
-                    Task mTask = new Task();
-                    mTask.setTaskId(mCursor.getInt(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_ID)));
-                    //mTask.setTaskDescription(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_DESCRIPTION)));
-                    mTask.setTaskFrom(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_FROM)));
-                    mTask.setTaskTo(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_TO)));
-                    mTask.setTaskRatings(mCursor.getFloat(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_RATING)));
-                    mTask.setTaskRequiredSkillId(mCursor.getInt(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_SKILL)));
-                    mTask.setTaskRequiredSkillName(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_SKILL_TYPE)));
-                    mTask.setTaskStatus(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_STATUS)));
-                    mTask.setCreatedAt(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_CREATED_AT)));
-                    mTaskArrayList.add(mTask);
-                } while (mCursor.moveToNext());
-                mCursor.close();
+            if (userId != null && !userId.isEmpty()) {
+                if (isRequester)
+                    mTaskArrayList.add(new Task());
+                DatabaseManager manager = new DatabaseManager(mActivity);
+                manager.openDatabase();
+                Cursor mCursor = manager.getTaskInfo();
+                if (mCursor != null && mCursor.moveToFirst() && mCursor.getCount() > 0) {
+                    do {
+                        Task mTask = new Task();
+                        mTask.setTaskId(mCursor.getInt(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_ID)));
+                        //mTask.setTaskDescription(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_DESCRIPTION)));
+                        mTask.setTaskFrom(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_FROM)));
+                        mTask.setTaskTo(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_TO)));
+                        mTask.setTaskRatings(mCursor.getFloat(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_RATING)));
+                        mTask.setTaskRequiredSkillId(mCursor.getInt(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_SKILL)));
+                        mTask.setTaskRequiredSkillName(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_SKILL_TYPE)));
+                        mTask.setTaskStatus(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_STATUS)));
+                        mTask.setCreatedAt(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_CREATED_AT)));
+                        mTaskArrayList.add(mTask);
+                    } while (mCursor.moveToNext());
+                    mCursor.close();
+                }
+                manager.closeDatabase();
             }
-            manager.closeDatabase();
         } catch (Exception e) {
             if (Constants.PRINT_LOGS)
                 e.printStackTrace();
@@ -131,6 +136,7 @@ public class DashboardFragment extends Fragment {
 
     /**
      * shows error message
+     *
      * @param errorMessage - Error message needs to be displayed
      */
     private void showErrorMessage(String errorMessage) {
@@ -201,6 +207,7 @@ public class DashboardFragment extends Fragment {
 
         class TaskSectionViewHolder extends RecyclerView.ViewHolder {
             private RecyclerView mTaskRecyclerView;
+
             TaskSectionViewHolder(View itemView) {
                 super(itemView);
                 mTaskRecyclerView = (RecyclerView) itemView;
@@ -222,6 +229,7 @@ public class DashboardFragment extends Fragment {
 
         class SkillSectionViewHolder extends RecyclerView.ViewHolder {
             private RecyclerView mSkillRecyclerView;
+
             SkillSectionViewHolder(View itemView) {
                 super(itemView);
                 mSkillRecyclerView = (RecyclerView) itemView;

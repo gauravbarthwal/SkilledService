@@ -40,6 +40,7 @@ public class ProfileFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         mActivity = getActivity();
+        userId = PreferenceUtils.getInstance(mActivity).getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
     }
 
     @Override
@@ -53,7 +54,6 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View mFragmentView = inflater.inflate(R.layout.fragment_profile, container, false);
         initFragmentView(mFragmentView);
-        userId = PreferenceUtils.getInstance(mActivity).getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
         return mFragmentView;
     }
 
@@ -74,16 +74,18 @@ public class ProfileFragment extends Fragment {
      */
     private void requestUserInformationFromDB() {
         try {
-            DatabaseManager manager = new DatabaseManager(mActivity);
-            manager.openDatabase();
-            Cursor mCursor = manager.getLoggedInUserData();
-            userName = mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_NAME));
-            userRating = mCursor.getFloat(mCursor.getColumnIndex(DatabaseHelper.COLUMN_RATING));
-            mCursor.close();
-            manager.closeDatabase();
-            mAdapter = new ProfileAdapter();
-            mProfileRecyclerView.setAdapter(mAdapter);
+            if (userId != null && !userId.isEmpty()) {
+                DatabaseManager manager = new DatabaseManager(mActivity);
+                manager.openDatabase();
+                Cursor mCursor = manager.getLoggedInUserData();
+                userName = mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_NAME));
+                userRating = mCursor.getFloat(mCursor.getColumnIndex(DatabaseHelper.COLUMN_RATING));
+                mCursor.close();
+                manager.closeDatabase();
+            }
         } catch (Exception ignored) {}
+        mAdapter = new ProfileAdapter();
+        mProfileRecyclerView.setAdapter(mAdapter);
         mProgressBar.setVisibility(View.GONE);
     }
 
