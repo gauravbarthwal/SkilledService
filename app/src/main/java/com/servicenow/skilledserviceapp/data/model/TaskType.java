@@ -1,7 +1,7 @@
 package com.servicenow.skilledserviceapp.data.model;
 
 public enum TaskType {
-    TASK_PENDING("task_pending"), TASK_ONGOING("task_ongoing"), TASK_COMPLETED("task_completed");
+    TASK_PENDING("task_pending"), TASK_ONGOING("task_ongoing"), TASK_COMPLETED("task_completed"), TASK_CANCELED("task_canceled");
     String value = "";
     TaskType(String value) {
         this.value = value;

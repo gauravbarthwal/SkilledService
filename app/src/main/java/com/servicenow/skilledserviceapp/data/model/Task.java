@@ -73,14 +73,31 @@ public class Task {
         this.taskRatings = taskRatings;
     }
 
+    public String getTaskFromName() {
+        return taskFromName;
+    }
+
+    public void setTaskFromName(String taskFromName) {
+        this.taskFromName = taskFromName;
+    }
+
+    public String getTaskToName() {
+        return taskToName;
+    }
+
+    public void setTaskToName(String taskToName) {
+        this.taskToName = taskToName;
+    }
+
     private int taskId;
     private String taskDescription;
     private int taskRequiredSkillId;
     private String taskRequiredSkillName;
     private String taskFrom;
+    private String taskFromName;
     private String taskTo;
+    private String taskToName;
     private String taskStatus;
     private String createdAt;
     private float taskRatings;
-
 }

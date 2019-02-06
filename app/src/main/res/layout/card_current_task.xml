@@ -10,48 +10,40 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:paddingStart="@dimen/margin_6">
-
-        <android.support.v7.widget.AppCompatImageView
-            android:id="@+id/worker_avatar"
-            android:layout_width="@dimen/margin_42"
-            android:layout_height="@dimen/margin_42"
-            android:src="@drawable/ic_worker" />
+        android:padding="@dimen/margin_6">
 
         <LinearLayout
+            android:id="@+id/taskHeader"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/margin_62"
-            android:layout_marginStart="@dimen/margin_8"
-            android:layout_toEndOf="@id/worker_avatar"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/worker_name"
+                android:id="@+id/taskLabelTop"
                 style="@style/style_heading_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:text="Gaurav Barthwal"
-                android:textSize="@dimen/text_size_20" />
+                android:text="To : Worker 1"
+                android:textSize="@dimen/text_size_19" />
 
             <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/worker_rating"
+                android:id="@+id/rating"
                 style="@style/style_heading_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_6"
                 android:maxLines="2"
                 android:text="Ratings: 4/5"
-                android:textSize="@dimen/text_size_20" />
+                android:textSize="@dimen/text_size_18" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/taskMetaData"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/margin_32"
-            android:layout_below="@id/worker_avatar"
-            android:layout_marginStart="@dimen/margin_8"
-            android:layout_marginTop="@dimen/margin_12"
+            android:layout_height="@dimen/margin_28"
+            android:layout_below="@id/taskHeader"
+            android:layout_marginTop="@dimen/margin_6"
             android:orientation="horizontal">
 
             <android.support.v7.widget.AppCompatTextView
@@ -64,13 +56,21 @@
                 android:textSize="@dimen/text_size_18" />
 
             <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/worker_skill"
+                android:id="@+id/task_skill"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/margin_12"
                 android:src="@drawable/ic_barber" />
         </LinearLayout>
+
+        <include
+            android:layout_marginTop="@dimen/margin_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/taskMetaData"
+            layout="@layout/layout_status_indicator"
+            android:id="@+id/indicatorLayout"/>
 
     </RelativeLayout>
 

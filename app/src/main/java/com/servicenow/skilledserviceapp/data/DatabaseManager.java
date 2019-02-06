@@ -208,6 +208,17 @@ public class DatabaseManager {
             String userId = mPreferenceUtils.getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
             boolean isRequester = mPreferenceUtils.getBooleanPreference(Constants.PREF_KEY_IS_REQUESTER);
             if (isRequester) {
+
+                String rawQuery;
+                rawQuery = "SELECT * FROM " + DatabaseHelper.TABLE_TASK
+                        + " WHERE " + DatabaseHelper.COLUMN_TASK_FROM + "='" + userId + "' AND " + DatabaseHelper.COLUMN_TASK_TO + "='" + workerId + "'"
+                        + " AND " + DatabaseHelper.COLUMN_TASK_STATUS + " NOT IN ('" + TaskType.TASK_PENDING + "','" + TaskType.TASK_ONGOING + "')";
+                LogUtils.e(TAG, "#sendRequestOfTask#rawQuery :: " + rawQuery);
+                Cursor mCursor = mSqLiteDatabase.rawQuery(rawQuery, null);
+                if (mCursor != null && mCursor.getCount() > 0) {
+                    return false;
+                }
+
                 ContentValues contentValue = new ContentValues();
                 contentValue.put(DatabaseHelper.COLUMN_TASK_SKILL, skillId);
                 contentValue.put(DatabaseHelper.COLUMN_TASK_FROM, userId);

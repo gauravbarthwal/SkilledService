@@ -98,34 +98,43 @@ public class SignInFragment extends Fragment {
                         DatabaseManager manager = new DatabaseManager(mActivity);
                         manager.openDatabase();
                         Cursor mCursor = manager.loginUser(mInputUserName.getEditableText().toString(), mInputPassword.getEditableText().toString());
-                        if (mCursor != null && mCursor.moveToFirst()) {
-                            String userId = mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_USER_ID));
-                            if (userId != null && !userId.isEmpty())
-                                PreferenceUtils.getInstance(mActivity).setStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID, userId);
+                        if (mCursor != null) {
+                            if ( mCursor.moveToFirst()) {
+                                String userId = mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_USER_ID));
+                                if (userId != null && !userId.isEmpty())
+                                    PreferenceUtils.getInstance(mActivity).setStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID, userId);
 
-                            String userType = mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_USER_TYPE));
-                            if (userType != null && !userType.isEmpty())
-                                PreferenceUtils.getInstance(mActivity).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER, userType.equalsIgnoreCase(Constants.USER_REQUESTER));
-                            manager.closeDatabase();
-                            mProgressBar.setVisibility(View.GONE);
+                                String userType = mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_USER_TYPE));
+                                if (userType != null && !userType.isEmpty())
+                                    PreferenceUtils.getInstance(mActivity).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER, userType.equalsIgnoreCase(Constants.USER_REQUESTER));
+                                manager.closeDatabase();
+                                mProgressBar.setVisibility(View.GONE);
 
-                            // skill required for Worker
-                            int skillId = 0;
-                            try {
-                                manager.openDatabase();
-                                Cursor mLoggedInUserCursor = manager.getLoggedInUserData();
-                                skillId = mLoggedInUserCursor.getInt(mLoggedInUserCursor.getColumnIndex(DatabaseHelper.COLUMN_SKILL_ID));
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                                // skill required for Worker
+                                int skillId = 0;
+                                if (userType != null && userType.equalsIgnoreCase(Constants.USER_WORKER)) {
+                                    try {
+                                        manager.openDatabase();
+                                        Cursor mLoggedInUserCursor = manager.getLoggedInUserData();
+                                        skillId = mLoggedInUserCursor.getInt(mLoggedInUserCursor.getColumnIndex(DatabaseHelper.COLUMN_SKILL_ID));
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    manager.closeDatabase();
+                                }
+
+                                if (skillId == -1) {
+                                    NavigationHelper.navigateToSkillsFragment(getActivity());
+                                    mActivity.finish();
+                                } else
+                                    NavigationHelper.navigateToHome(getActivity());
+                                //NavigationHelper.navigateToHome(getActivity());
+                            } else {
+                                final HashMap<String, String> inputMap = new HashMap<>();
+                                inputMap.put(Constants.DIALOG_KEY_MESSAGE, getString(R.string.error_username_password_incorrect));
+                                NavigationHelper.showDialog(getActivity(), DialogType.DIALOG_FAILURE, inputMap, null);
+                                mProgressBar.setVisibility(View.GONE);
                             }
-                            manager.closeDatabase();
-
-                            if (skillId == -1) {
-                                NavigationHelper.navigateToSkillsFragment(getActivity());
-                                mActivity.finish();
-                            } else
-                                NavigationHelper.navigateToHome(getActivity());
-                            //NavigationHelper.navigateToHome(getActivity());
                         } else {
                             final HashMap<String, String> inputMap = new HashMap<>();
                             inputMap.put(Constants.DIALOG_KEY_MESSAGE, getString(R.string.error_oops_something_went_wrong));

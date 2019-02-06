@@ -52,6 +52,8 @@ public class RequestNewTaskFragment extends Fragment implements SkillAdapter.Ski
     private RecyclerView mWorkerRecyclerView;
     private WorkerAdapter mWorkerAdapter;
 
+    private AppCompatTextView mErrorMessage;
+
     private ArrayList<Skill> mSkillArrayList = new ArrayList<>();
     private ArrayList<String> mAlreadyRequestedWorkers = new ArrayList<>();
 
@@ -115,7 +117,8 @@ public class RequestNewTaskFragment extends Fragment implements SkillAdapter.Ski
             mSkillRecyclerView.setVisibility(View.VISIBLE);
             mSendRequestLayout.setVisibility(View.GONE);
             return false;
-        } else return true;
+        } else
+            return true;
     }
 
     /**
@@ -145,6 +148,7 @@ public class RequestNewTaskFragment extends Fragment implements SkillAdapter.Ski
                 outRect.set(leftRightPadding, topBottomPadding, leftRightPadding, topBottomPadding);
             }
         });
+        mErrorMessage = mView.findViewById(R.id.errorMessage);
         mProgressBar.setVisibility(View.GONE);
     }
 
@@ -181,10 +185,22 @@ public class RequestNewTaskFragment extends Fragment implements SkillAdapter.Ski
     }
 
     /**
+     * sets error message
+     * @param errorMessage - error message needs to be shown
+     */
+    private void showErrorMessage(String errorMessage) {
+        final HashMap<String, String> inputMap = new HashMap<>();
+        inputMap.put(Constants.DIALOG_KEY_MESSAGE, errorMessage);
+        NavigationHelper.showDialog(getActivity(), DialogType.DIALOG_FAILURE, inputMap, null);
+        mProgressBar.setVisibility(View.GONE);
+    }
+
+    /**
      * request all the workers associated with the given skill
      */
     private void requestSkilledWorkerList(int requiredSkill) {
-        ArrayList<Worker> mWorkerArrayList = new ArrayList<>();
+        final ArrayList<Worker> mWorkerArrayList = new ArrayList<>();
+        mWorkerArrayList.clear();
         try {
             DatabaseManager manager = new DatabaseManager(mActivity);
             manager.openDatabase();
@@ -206,15 +222,21 @@ public class RequestNewTaskFragment extends Fragment implements SkillAdapter.Ski
             if (Constants.PRINT_LOGS)
                 e.printStackTrace();
         }
-        if (mWorkerAdapter == null) {
-            mWorkerAdapter = new WorkerAdapter(mWorkerArrayList);
-            mWorkerRecyclerView.setAdapter(mWorkerAdapter);
+
+        if (mWorkerArrayList.size() > 0) {
+            if (mWorkerAdapter == null) {
+                mWorkerAdapter = new WorkerAdapter(mWorkerArrayList);
+                mWorkerRecyclerView.setAdapter(mWorkerAdapter);
+            } else {
+                mWorkerAdapter.updateWorkerList(mWorkerArrayList);
+            }
+            mHeading.setText(getString(R.string.select_worker));
+            mSkillRecyclerView.setVisibility(View.GONE);
+            mSendRequestLayout.setVisibility(View.VISIBLE);
+            mErrorMessage.setVisibility(View.GONE);
         } else {
-            mWorkerAdapter.updateWorkerList(mWorkerArrayList);
+            showErrorMessage(getString(R.string.error_no_one_is_available_to_pick_the_task));
         }
-        mHeading.setText(getString(R.string.select_worker));
-        mSkillRecyclerView.setVisibility(View.GONE);
-        mSendRequestLayout.setVisibility(View.VISIBLE);
         mProgressBar.setVisibility(View.GONE);
     }
 
@@ -273,10 +295,11 @@ public class RequestNewTaskFragment extends Fragment implements SkillAdapter.Ski
             workerViewHolder.mWorkerRatings.setText("Ratings : " + mWorker.getWorkerRatings());
             workerViewHolder.mWorkerSkillImage.setImageResource(Constants.getSkillIcon(mWorker.getSkillName()));
             if (mAlreadyRequestedWorkers.size() > 0 && mAlreadyRequestedWorkers.contains(mWorker.getWorkerId())) {
-                workerViewHolder.mStatusIndicator.setBackgroundResource(R.drawable.ic_circle_red);
-                //workerViewHolder.mStatusType.setText();
+                workerViewHolder.mStatusIndicator.setBackgroundResource(R.drawable.ic_circle_yellow);
+                workerViewHolder.mStatusType.setText("Pending");
             } else {
                 workerViewHolder.mStatusIndicator.setBackgroundResource(R.drawable.ic_circle_green);
+                workerViewHolder.mStatusType.setText("Available");
             }
         }
 
@@ -314,7 +337,7 @@ public class RequestNewTaskFragment extends Fragment implements SkillAdapter.Ski
                                     manager.openDatabase();
                                     if (!manager.sendRequestOfTask(mWorker.getSkillId(), mWorker.getWorkerId())) {
                                         final HashMap<String, String> inputMap = new HashMap<>();
-                                        inputMap.put(Constants.DIALOG_KEY_MESSAGE, getString(R.string.error_oops_something_went_wrong));
+                                        inputMap.put(Constants.DIALOG_KEY_MESSAGE, getString(R.string.error_already_sent_request));
                                         NavigationHelper.showDialog(getActivity(), DialogType.DIALOG_FAILURE, inputMap, null);
                                     } else {
                                         final HashMap<String, String> inputMap = new HashMap<>();

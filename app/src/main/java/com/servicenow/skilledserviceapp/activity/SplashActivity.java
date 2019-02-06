@@ -30,7 +30,7 @@ public class SplashActivity extends AppCompatActivity {
         }
 
         String userId = PreferenceUtils.getInstance(SplashActivity.this).getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
-        if (userId != null) {
+        if (userId == null) {
             PreferenceUtils.getInstance(SplashActivity.this).setStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID, "");
             PreferenceUtils.getInstance(SplashActivity.this).setBooleanPreference(Constants.PREF_KEY_IS_REQUESTER, false);
         } else if (userId.isEmpty()) {
@@ -44,11 +44,13 @@ public class SplashActivity extends AppCompatActivity {
                 // skill required for Worker
                 int skillId = 0;
                 try {
-                    DatabaseManager manager = new DatabaseManager(SplashActivity.this);
-                    manager.openDatabase();
-                    Cursor mCursor = manager.getLoggedInUserData();
-                    skillId = mCursor.getInt(mCursor.getColumnIndex(DatabaseHelper.COLUMN_SKILL_ID));
-                    manager.closeDatabase();
+                    if (userId != null && !userId.isEmpty()) {
+                        DatabaseManager manager = new DatabaseManager(SplashActivity.this);
+                        manager.openDatabase();
+                        Cursor mCursor = manager.getLoggedInUserData();
+                        skillId = mCursor.getInt(mCursor.getColumnIndex(DatabaseHelper.COLUMN_SKILL_ID));
+                        manager.closeDatabase();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
