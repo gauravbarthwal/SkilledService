@@ -9,7 +9,7 @@ import android.view.MenuItem;
 
 import com.servicenow.skilledserviceapp.R;
 import com.servicenow.skilledserviceapp.data.DatabaseManager;
-import com.servicenow.skilledserviceapp.fragment.DashbardFragment;
+import com.servicenow.skilledserviceapp.fragment.DashboardFragment;
 import com.servicenow.skilledserviceapp.fragment.ProfileFragment;
 import com.servicenow.skilledserviceapp.utils.LogUtils;
 
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         Fragment mFragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
-        if (mFragment != null && mFragment instanceof DashbardFragment) {
+        if (mFragment != null && mFragment instanceof DashboardFragment) {
             mFragment.onResume();
         }
     }
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, new DashbardFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, new DashboardFragment()).commit();
     }
 
     private void addListeners() {
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.navigation_dashboard) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, new DashbardFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, new DashboardFragment()).commit();
         }else if (id == R.id.navigation_profile) {
             getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, new ProfileFragment()).commit();
         }

@@ -28,7 +28,7 @@ import com.servicenow.skilledserviceapp.utils.adapters.SkillAdapter;
 
 import java.util.ArrayList;
 
-public class DashbardFragment extends Fragment {
+public class DashboardFragment extends Fragment {
     private Activity mActivity;
     private RecyclerView mDashboardRecyclerview;
     private ArrayList<Task> mTaskArrayList = new ArrayList<>();
