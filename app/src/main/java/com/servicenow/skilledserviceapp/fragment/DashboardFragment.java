@@ -15,6 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.servicenow.skilledserviceapp.R;
@@ -22,11 +23,14 @@ import com.servicenow.skilledserviceapp.data.DatabaseHelper;
 import com.servicenow.skilledserviceapp.data.DatabaseManager;
 import com.servicenow.skilledserviceapp.data.model.Task;
 import com.servicenow.skilledserviceapp.data.model.TaskType;
+import com.servicenow.skilledserviceapp.interfaces.DialogListener;
 import com.servicenow.skilledserviceapp.utils.Constants;
+import com.servicenow.skilledserviceapp.utils.DialogType;
 import com.servicenow.skilledserviceapp.utils.NavigationHelper;
 import com.servicenow.skilledserviceapp.utils.PreferenceUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DashboardFragment extends Fragment {
     private Activity mActivity;
@@ -235,7 +239,32 @@ public class DashboardFragment extends Fragment {
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(mActivity, "Current TASK", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(mActivity, "Current TASK", Toast.LENGTH_SHORT).show();
+                        final HashMap<String, String> inputMap = new HashMap<>();
+                        Task mTask = mTaskArrayList.get(getAdapterPosition());
+                        String taskStatus = mTask.getTaskStatus();
+                        if (isRequester) {
+                            inputMap.put(Constants.DIALOG_KEY_MESSAGE, "You have sent request to " + mTask.getTaskToName() + " on " + mTask.getCreatedAt());
+                            if(taskStatus.equalsIgnoreCase(TaskType.TASK_PENDING.getValue())) {
+                                inputMap.put(Constants.DIALOG_KEY_ACTION_LEFT_LABEL, getString(R.string.action_cancel_task));
+                            } else if (taskStatus.equalsIgnoreCase(TaskType.TASK_ONGOING.getValue())){
+                                inputMap.put(Constants.DIALOG_KEY_ACTION_LEFT_LABEL, getString(R.string.action_task_completed));
+                            }
+                        } else {
+                            inputMap.put(Constants.DIALOG_KEY_MESSAGE, "You have received request from " + mTask.getTaskFromName() + " on " + mTask.getCreatedAt());
+                            if(taskStatus.equalsIgnoreCase(TaskType.TASK_PENDING.getValue())) {
+                                inputMap.put(Constants.DIALOG_KEY_ACTION_LEFT_LABEL, getString(R.string.action_cancel_task));
+                                inputMap.put(Constants.DIALOG_KEY_ACTION_RIGHT_LABEL, getString(R.string.action_accept_task));
+                            } else if (taskStatus.equalsIgnoreCase(TaskType.TASK_ONGOING.getValue())){
+                                inputMap.put(Constants.DIALOG_KEY_ACTION_LEFT_LABEL, getString(R.string.action_task_completed));
+                            }
+                        }
+                        NavigationHelper.showDialog(getActivity(), DialogType.DIALOG_TASK_ACTION, inputMap, new DialogListener() {
+                            @Override
+                            public void onButtonClicked(Button action) {
+
+                            }
+                        });
                     }
                 });
             }

@@ -139,6 +139,7 @@ public class DialogFragmentHelper extends DialogFragment{
         final AppCompatTextView mDialogMessage = mDialog.findViewById(R.id.alert_message);
         final AppCompatButton mActionLeft = mDialog.findViewById(R.id.action_left);
         final AppCompatButton mActionRight = mDialog.findViewById(R.id.action_right);
+        mActionRight.setVisibility(View.GONE);
 
         mActionLeft.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -170,6 +171,7 @@ public class DialogFragmentHelper extends DialogFragment{
             if (inputHashMap.containsKey(DIALOG_KEY_ACTION_RIGHT_LABEL)) {
                 mActionRight.setText((CharSequence) inputHashMap.get(DIALOG_KEY_ACTION_RIGHT_LABEL));
                 mActionRight.setTag(inputHashMap.get(DIALOG_KEY_ACTION_LEFT_LABEL));
+                mActionRight.setVisibility(View.VISIBLE);
             }
         }
         return mDialog;
