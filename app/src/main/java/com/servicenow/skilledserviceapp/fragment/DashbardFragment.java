@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import com.servicenow.skilledserviceapp.data.model.Skill;
 import com.servicenow.skilledserviceapp.data.model.Task;
 import com.servicenow.skilledserviceapp.utils.Constants;
 import com.servicenow.skilledserviceapp.utils.NavigationHelper;
+import com.servicenow.skilledserviceapp.utils.PreferenceUtils;
 import com.servicenow.skilledserviceapp.utils.adapters.SkillAdapter;
 
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ public class DashbardFragment extends Fragment {
     private ArrayList<Skill> mSkillArrayList = new ArrayList<>();
 
     private DashboardAdapter mDashboardAdapter;
+    private AppCompatTextView mErrorMessage;
     private SkillAdapter mSkillAdapter;
     private int skillItemSelectedColor;
     private int skillItemDefaultColor;
@@ -40,6 +43,8 @@ public class DashbardFragment extends Fragment {
     private int selectedSkillId = -1;
 
     private int taskCardPadding;
+
+    private boolean isRequester;
 
     @Override
     public void onAttach(Context context) {
@@ -49,6 +54,8 @@ public class DashbardFragment extends Fragment {
         skillItemSelectedColor = getResources().getColor(R.color.colorPrimary);
 
         taskCardPadding = getResources().getDimensionPixelOffset(R.dimen.margin_6);
+
+        isRequester = PreferenceUtils.getInstance(context).getBooleanPreference(Constants.PREF_KEY_IS_REQUESTER);
     }
 
     @Nullable
@@ -63,7 +70,7 @@ public class DashbardFragment extends Fragment {
     public void onResume() {
         super.onResume();
         getCurrentTaskInfo();
-        requestSkillList();
+        //requestSkillList();
     }
 
     /**
@@ -76,6 +83,9 @@ public class DashbardFragment extends Fragment {
         mDashboardRecyclerview.setLayoutManager(new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false));
         mDashboardAdapter = new DashboardAdapter();
         mDashboardRecyclerview.setAdapter(mDashboardAdapter);
+
+        mErrorMessage = mView.findViewById(R.id.errorMessage);
+        mErrorMessage.setVisibility(View.GONE);
     }
 
     /**
@@ -84,7 +94,8 @@ public class DashbardFragment extends Fragment {
     private void getCurrentTaskInfo() {
         try {
             mTaskArrayList.clear();
-            mTaskArrayList.add(new Task());
+            if (isRequester)
+                mTaskArrayList.add(new Task());
             DatabaseManager manager = new DatabaseManager(mActivity);
             manager.openDatabase();
             Cursor mCursor = manager.getTaskInfo();
@@ -110,7 +121,21 @@ public class DashbardFragment extends Fragment {
                 e.printStackTrace();
         }
 
-        mDashboardAdapter.notifyDataSetChanged();
+        if (mTaskArrayList.size() > 0) {
+            mDashboardAdapter.notifyDataSetChanged();
+            mErrorMessage.setVisibility(View.GONE);
+        } else {
+            showErrorMessage(getString(R.string.error_no_task_info_available));
+        }
+    }
+
+    /**
+     * shows error message
+     * @param errorMessage - Error message needs to be displayed
+     */
+    private void showErrorMessage(String errorMessage) {
+        mErrorMessage.setText(errorMessage);
+        mErrorMessage.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -223,57 +248,6 @@ public class DashbardFragment extends Fragment {
             }
         }
     }
-
-    /**
-     * Adapter to show skills
-     */
-    /*private class SkillAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private View previousSelectedItem;
-
-        @NonNull
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-            View view = LayoutInflater.from(mActivity).inflate(R.layout.layout_item_skill, viewGroup, false);
-            return new SkillViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-            if (viewHolder instanceof SkillViewHolder) {
-                SkillViewHolder mSkillViewHolder = (SkillViewHolder) viewHolder;
-                Skill mSkill = mSkillArrayList.get(i);
-                mSkillViewHolder.mSkillType.setText(mSkill.getSkillType());
-                mSkillViewHolder.mSkillType.setTag(mSkill.getSkillId());
-                mSkillViewHolder.mSkillImage.setImageResource(Constants.getSkillIcon(mSkill.getSkillType()));
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return mSkillArrayList.size();
-        }
-
-        class SkillViewHolder extends RecyclerView.ViewHolder {
-            private AppCompatTextView mSkillType;
-            private AppCompatImageView mSkillImage;
-
-            SkillViewHolder(@NonNull final View itemView) {
-                super(itemView);
-                mSkillType = itemView.findViewById(R.id.skillType);
-                mSkillImage = itemView.findViewById(R.id.skillImage);
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (previousSelectedItem != null)
-                            previousSelectedItem.setBackgroundColor(skillItemDefaultColor);
-                        itemView.setBackgroundColor(skillItemSelectedColor);
-                        selectedSkillId = mSkillArrayList.get(getAdapterPosition()).getSkillId();
-                        previousSelectedItem = itemView;
-                    }
-                });
-            }
-        }
-    }*/
 
     /**
      * Adapter to show skills

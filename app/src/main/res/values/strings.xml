@@ -50,6 +50,8 @@
     <string name="error_confirm_password">Password does not match.</string>
     <string name="error_registration_failed">Registration failed!!</string>
     <string name="error_already_sent_request">You have requested this worker already!!</string>
+    <string name="error_no_task_info_available">Task info not available.</string>
+    <string name="error_no_one_is_available_to_pick_the_task">No one is available to pick the task</string>
 
     <!--Task Card-->
     <string name="request_new_task">Request a task</string>

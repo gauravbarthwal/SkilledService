@@ -43,11 +43,9 @@
            android:layout_width="match_parent"
            android:layout_height="match_parent"
            android:scrollbars="none"
-           android:padding="@dimen/margin_6"
-           android:layout_marginBottom="@dimen/margin_62"/>
+           android:padding="@dimen/margin_6" />
 
     </RelativeLayout>
-
 
     <include layout="@layout/layout_progress"/>
 

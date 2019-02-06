@@ -235,10 +235,13 @@ public class DatabaseManager {
     public Cursor getLoggedInUserData() {
         try {
             String rawQuery;
-            if (PreferenceUtils.getInstance(mContext).getBooleanPreference(Constants.PREF_KEY_IS_REQUESTER)) {
-                rawQuery = "SELECT * FROM " + DatabaseHelper.TABLE_REQUESTER;
+            PreferenceUtils mPreferenceUtils = PreferenceUtils.getInstance(mContext);
+            String userId = mPreferenceUtils.getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
+            boolean isRequester = mPreferenceUtils.getBooleanPreference(Constants.PREF_KEY_IS_REQUESTER);
+            if (isRequester) {
+                rawQuery = "SELECT * FROM " + DatabaseHelper.TABLE_REQUESTER + " WHERE " + DatabaseHelper.COLUMN_REQUESTER_ID + " = '" + userId + "'";
             } else {
-                rawQuery = "SELECT * FROM " + DatabaseHelper.TABLE_WORKER;
+                rawQuery = "SELECT * FROM " + DatabaseHelper.TABLE_WORKER + " WHERE " + DatabaseHelper.COLUMN_WORKER_ID + " = '" + userId + "'" ;
             }
             LogUtils.d(TAG, "#getLoggedInUserData#query ::" + rawQuery);
             Cursor mCursor = mSqLiteDatabase.rawQuery(rawQuery, null);
@@ -345,7 +348,7 @@ public class DatabaseManager {
                 rawQuery = "SELECT * FROM " + DatabaseHelper.TABLE_TASK + " , " + DatabaseHelper.TABLE_SKILL + " , " + DatabaseHelper.TABLE_REQUESTER
                         + " WHERE " + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_TO + "= '" + userId + "' AND "
                         + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_SKILL +"=" + DatabaseHelper.TABLE_SKILL + "." + DatabaseHelper.COLUMN_SKILL_ID + " AND "
-                        + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_FROM + "=" + DatabaseHelper.TABLE_WORKER + "." + DatabaseHelper.COLUMN_REQUESTER_ID
+                        + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_FROM + "=" + DatabaseHelper.TABLE_REQUESTER + "." + DatabaseHelper.COLUMN_REQUESTER_ID
                         + " ORDER BY " + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_CREATED_AT + " DESC";
             }
             LogUtils.d(TAG, "#getTaskInfo#query ::" + rawQuery);
