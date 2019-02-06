@@ -97,6 +97,10 @@ public class NavigationHelper {
                 mDialogFragmentHelper = DialogFragmentHelper.getInstance(mDialogType, inputMap, mDialogListener);
                 mDialogFragmentHelper.show(mFragmentManager, Constants.DIALOG_SUCCESS);
                 break;
+            case DIALOG_TASK_ACTION:
+                mDialogFragmentHelper = DialogFragmentHelper.getInstance(mDialogType, inputMap, mDialogListener);
+                mDialogFragmentHelper.show(mFragmentManager, Constants.DIALOG_TASK_ACTION);
+                break;
         }
     }
 }

@@ -59,5 +59,8 @@ public class Constants {
 
     public static final String DIALOG_FAILURE = "dialog_failure";
     public static final String DIALOG_SUCCESS = "dialog_success";
+    public static final String DIALOG_TASK_ACTION = "dialog_task_action";
     public static final String DIALOG_KEY_MESSAGE = "dialog_key_message";
+    public static final String DIALOG_KEY_ACTION_LEFT_LABEL = "dialog_key_action_left_label";
+    public static final String DIALOG_KEY_ACTION_RIGHT_LABEL = "dialog_key_action_right_label";
 }

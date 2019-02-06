@@ -18,6 +18,8 @@ import com.servicenow.skilledserviceapp.utils.DialogType;
 
 import java.util.HashMap;
 
+import static com.servicenow.skilledserviceapp.utils.Constants.DIALOG_KEY_ACTION_LEFT_LABEL;
+import static com.servicenow.skilledserviceapp.utils.Constants.DIALOG_KEY_ACTION_RIGHT_LABEL;
 import static com.servicenow.skilledserviceapp.utils.Constants.DIALOG_KEY_MESSAGE;
 
 public class DialogFragmentHelper extends DialogFragment{
@@ -56,6 +58,8 @@ public class DialogFragmentHelper extends DialogFragment{
                     return dialogFailure();
                 case DIALOG_SUCCESS:
                     return dialogSuccess();
+                case DIALOG_TASK_ACTION:
+                    return dialogTaskAction();
             }
         }
 
@@ -117,6 +121,56 @@ public class DialogFragmentHelper extends DialogFragment{
         if (inputHashMap != null) {
             if (inputHashMap.containsKey(DIALOG_KEY_MESSAGE))
                 mDialogMessage.setText((CharSequence) inputHashMap.get(DIALOG_KEY_MESSAGE));
+        }
+        return mDialog;
+    }
+
+    /**
+     * shows a dialog to perform action on the Task
+     * Constants.DIALOG_KEY_MESSAGE is being used to set alert message
+     * Constants.DIALOG_KEY_ACTION_LEFT_LABEL is being used to set left action text
+     * Constants.DIALOG_KEY_ACTION_RIGHT_LABEL is being used to set right action text
+     *
+     * @return - {@link Dialog}
+     */
+    private Dialog dialogTaskAction() {
+        mDialog = new Dialog(mActivity);
+        mDialog.setContentView(R.layout.dialog_task_action);
+        final AppCompatTextView mDialogMessage = mDialog.findViewById(R.id.alert_message);
+        final AppCompatButton mActionLeft = mDialog.findViewById(R.id.action_left);
+        final AppCompatButton mActionRight = mDialog.findViewById(R.id.action_right);
+
+        mActionLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDialogListener != null)
+                    mDialogListener.onButtonClicked(mActionLeft);
+                dismiss();
+            }
+        });
+
+        mActionRight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDialogListener != null)
+                    mDialogListener.onButtonClicked(mActionLeft);
+                dismiss();
+            }
+        });
+
+        if (inputHashMap != null) {
+            if (inputHashMap.containsKey(DIALOG_KEY_MESSAGE))
+                mDialogMessage.setText((CharSequence) inputHashMap.get(DIALOG_KEY_MESSAGE));
+
+            if (inputHashMap.containsKey(DIALOG_KEY_ACTION_LEFT_LABEL)) {
+                mActionLeft.setText((CharSequence) inputHashMap.get(DIALOG_KEY_ACTION_LEFT_LABEL));
+                mActionLeft.setTag(inputHashMap.get(DIALOG_KEY_ACTION_LEFT_LABEL));
+            }
+
+            if (inputHashMap.containsKey(DIALOG_KEY_ACTION_RIGHT_LABEL)) {
+                mActionRight.setText((CharSequence) inputHashMap.get(DIALOG_KEY_ACTION_RIGHT_LABEL));
+                mActionRight.setTag(inputHashMap.get(DIALOG_KEY_ACTION_LEFT_LABEL));
+            }
         }
         return mDialog;
     }
