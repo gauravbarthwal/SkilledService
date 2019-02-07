@@ -1,0 +1,54 @@
+<resources>
+	<dimen name="corner_radius">3dp</dimen>
+	<dimen name="border_stroke_width">1dp</dimen>
+
+	<!-- Default screen margins, per the Android Design guidelines. -->
+	<dimen name="activity_horizontal_margin">16dp</dimen>
+	<dimen name="activity_vertical_margin">16dp</dimen>
+	<dimen name="nav_header_vertical_spacing">8dp</dimen>
+	<dimen name="nav_header_height">176dp</dimen>
+	<dimen name="fab_margin">16dp</dimen>
+	<dimen name="elevation_5">5dp</dimen>
+	<dimen name="item_skills_height">65dp</dimen>
+
+	<!--margin/paddings-->
+	<dimen name="margin_2">2dp</dimen>
+	<dimen name="margin_6">6dp</dimen>
+	<dimen name="margin_8">8dp</dimen>
+	<dimen name="margin_12">12dp</dimen>
+	<dimen name="margin_16">16dp</dimen>
+	<dimen name="margin_24">24dp</dimen>
+	<dimen name="margin_28">28dp</dimen>
+	<dimen name="margin_32">32dp</dimen>
+	<dimen name="margin_42">42dp</dimen>
+	<dimen name="margin_62">62dp</dimen>
+	<dimen name="margin_82">82dp</dimen>
+	<dimen name="margin_100">100dp</dimen>
+
+	<!--text sizes-->
+	<dimen name="text_size_10">10sp</dimen>
+	<dimen name="text_size_12">12sp</dimen>
+	<dimen name="text_size_14">14sp</dimen>
+	<dimen name="text_size_16">16sp</dimen>
+	<dimen name="text_size_18">18sp</dimen>
+	<dimen name="text_size_19">19sp</dimen>
+	<dimen name="text_size_20">20sp</dimen>
+	<dimen name="text_size_22">22sp</dimen>
+
+	<!--action/button-->
+	<dimen name="action_width">150dp</dimen>
+	<dimen name="action_signin_height">60dp</dimen>
+	<dimen name="action_width_small">50dp</dimen>
+	<dimen name="action_height_small">30dp</dimen>
+
+	<!--card task-->
+	<dimen name="card_task_width">213.3dp</dimen>
+	<dimen name="card_task_height">120dp</dimen>
+
+	<!--card worker-->
+	<dimen name="card_worker_width">240dp</dimen>
+	<dimen name="card_worker_height">135dp</dimen>
+
+	<!--dialog worker info-->
+	<dimen name="dialog_worker_info_review_section_height"></dimen>
+</resources>

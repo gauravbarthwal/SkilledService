@@ -37,6 +37,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TASK_RATING = "task_rating";
     public static final String COLUMN_TASK_CREATED_AT = "task_created_at";
 
+    public static final String COLUMN_TASK_TOTAL_RATING = "task_total_rating";
+
     public static final String COLUMN_SKILL_ID = "skill_id";
     public static final String COLUMN_SKILL_TYPE = "skill_type";
     public static final String COLUMN_SKILL_ICON = "skill_icon";

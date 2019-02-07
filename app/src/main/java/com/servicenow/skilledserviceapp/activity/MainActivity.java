@@ -11,6 +11,7 @@ import com.servicenow.skilledserviceapp.R;
 import com.servicenow.skilledserviceapp.data.DatabaseManager;
 import com.servicenow.skilledserviceapp.fragment.DashboardFragment;
 import com.servicenow.skilledserviceapp.fragment.ProfileFragment;
+import com.servicenow.skilledserviceapp.utils.Constants;
 import com.servicenow.skilledserviceapp.utils.LogUtils;
 
 public class MainActivity extends AppCompatActivity
@@ -20,8 +21,11 @@ public class MainActivity extends AppCompatActivity
     private DatabaseManager manager;
     private Cursor mCursor;
 
+    private String loadFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LogUtils.e(TAG, "#onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initActivity();
@@ -31,23 +35,55 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
+        LogUtils.e(TAG, "#onResume");
         super.onResume();
+        if (loadFragment != null) {
+            if (loadFragment.equalsIgnoreCase(DashboardFragment.class.getSimpleName()))
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, new DashboardFragment()).commit();
+            else getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, new ProfileFragment()).commit();
+            loadFragment = null;
+        }
+
+
         Fragment mFragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
         if (mFragment != null && mFragment instanceof DashboardFragment) {
             mFragment.onResume();
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        LogUtils.e(TAG, "#onSaveInstanceState");
+        super.onSaveInstanceState(outState);
+        Fragment mFragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
+        if (mFragment != null) {
+            if (mFragment instanceof DashboardFragment)
+                outState.putString(Constants.KEY_LOAD_FRAGMENT, DashboardFragment.class.getSimpleName());
+            else
+                outState.putString(Constants.KEY_LOAD_FRAGMENT, ProfileFragment.class.getSimpleName());
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        LogUtils.e(TAG, "#onRestoreInstanceState");
+        super.onRestoreInstanceState(savedInstanceState);
+
+        loadFragment = savedInstanceState.getString(Constants.KEY_LOAD_FRAGMENT);
+    }
+
     /**
      * initialization of Activity
      */
     private void initActivity(){
+        LogUtils.e(TAG, "#initActivity");
         manager = new DatabaseManager(MainActivity.this);
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, new DashboardFragment()).commit();
+        if (loadFragment == null)
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, new DashboardFragment()).commit();
     }
 
     private void addListeners() {

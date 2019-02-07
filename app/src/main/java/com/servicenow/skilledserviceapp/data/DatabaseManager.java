@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.provider.Settings;
 
+import com.servicenow.skilledserviceapp.data.model.Task;
 import com.servicenow.skilledserviceapp.data.model.TaskType;
 import com.servicenow.skilledserviceapp.utils.Constants;
 import com.servicenow.skilledserviceapp.utils.LogUtils;
@@ -401,6 +402,31 @@ public class DatabaseManager {
         mContentValues.put(DatabaseHelper.COLUMN_TASK_RATING, ratings);
         int i = mSqLiteDatabase.update(DatabaseHelper.TABLE_TASK, mContentValues, DatabaseHelper.COLUMN_TASK_ID + " = ?", new String[]{String.valueOf(taskId)});
         return i > -1;
+    }
+
+    /**
+     * updates worker ratings based on the task
+     * @param workerId - worker id
+     */
+    public void updateWorkerRatings(String workerId) {
+        try {
+            String rawQuery = "SELECT SUM(" + DatabaseHelper.COLUMN_TASK_RATING + ") AS '" + DatabaseHelper.COLUMN_TASK_TOTAL_RATING +"'"
+                    + " COUNT(" + DatabaseHelper.COLUMN_TASK_RATING + ")"
+                    + " FROM " + DatabaseHelper.TABLE_TASK + " WHERE " + DatabaseHelper.COLUMN_TASK_TO + " = '" + workerId +"'";
+            LogUtils.e(TAG, "#updateWorkerRatings#rawQuery :: " + rawQuery);
+            Cursor mCursor = mSqLiteDatabase.rawQuery(rawQuery, null);
+            if (mCursor != null && mCursor.moveToFirst()) {
+                float totalRatings = mCursor.getFloat(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_TOTAL_RATING));
+                int count = mCursor.getInt(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_RATING));
+                float averageRating = totalRatings / count;
+                ContentValues mContentValues = new ContentValues();
+                mContentValues.put(DatabaseHelper.COLUMN_RATING, averageRating);
+                mSqLiteDatabase.update(DatabaseHelper.TABLE_WORKER, mContentValues, DatabaseHelper.COLUMN_WORKER_ID + " = ?", new String[]{workerId});
+            }
+        } catch (Exception e){
+            if (Constants.PRINT_LOGS)
+                e.printStackTrace();
+        }
     }
 
     /**

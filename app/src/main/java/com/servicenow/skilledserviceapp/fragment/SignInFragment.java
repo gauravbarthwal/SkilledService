@@ -117,6 +117,7 @@ public class SignInFragment extends Fragment {
                                         manager.openDatabase();
                                         Cursor mLoggedInUserCursor = manager.getLoggedInUserData();
                                         skillId = mLoggedInUserCursor.getInt(mLoggedInUserCursor.getColumnIndex(DatabaseHelper.COLUMN_SKILL_ID));
+                                        manager.updateWorkerRatings(userId);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
