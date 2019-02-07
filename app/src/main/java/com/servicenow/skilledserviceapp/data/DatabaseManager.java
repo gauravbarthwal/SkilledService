@@ -213,7 +213,7 @@ public class DatabaseManager {
                 String rawQuery;
                 rawQuery = "SELECT * FROM " + DatabaseHelper.TABLE_TASK
                         + " WHERE " + DatabaseHelper.COLUMN_TASK_FROM + "='" + userId + "' AND " + DatabaseHelper.COLUMN_TASK_TO + "='" + workerId + "'"
-                        + " AND " + DatabaseHelper.COLUMN_TASK_STATUS + " NOT IN ('" + TaskType.TASK_PENDING + "','" + TaskType.TASK_ONGOING + "')";
+                        + " AND " + DatabaseHelper.COLUMN_TASK_STATUS + " IN ('" + TaskType.TASK_PENDING.getValue() + "','" + TaskType.TASK_ONGOING.getValue() + "')";
                 LogUtils.e(TAG, "#sendRequestOfTask#rawQuery :: " + rawQuery);
                 Cursor mCursor = mSqLiteDatabase.rawQuery(rawQuery, null);
                 if (mCursor != null && mCursor.getCount() > 0) {
@@ -301,7 +301,7 @@ public class DatabaseManager {
             rawQuery = "SELECT "+ DatabaseHelper.COLUMN_TASK_TO +" FROM " + DatabaseHelper.TABLE_TASK
                     + " WHERE " + DatabaseHelper.COLUMN_TASK_SKILL + " = " + skillId
                     + " AND " + DatabaseHelper.COLUMN_TASK_FROM +  " = '" + userId + "'"
-                    + " AND " + DatabaseHelper.COLUMN_TASK_STATUS + " NOT IN('" + TaskType.TASK_COMPLETED.getValue() +"')";
+                    + " AND " + DatabaseHelper.COLUMN_TASK_STATUS + " NOT IN('" + TaskType.TASK_COMPLETED.getValue() +"','"+ TaskType.TASK_CANCELED.getValue() +"')";
             LogUtils.d(TAG, "#fetchAlreadyRequestedWorkers#query ::" + rawQuery);
             Cursor mCursor = mSqLiteDatabase.rawQuery(rawQuery, null);
             if (mCursor != null) {
@@ -411,13 +411,13 @@ public class DatabaseManager {
     public void updateWorkerRatings(String workerId) {
         try {
             String rawQuery = "SELECT SUM(" + DatabaseHelper.COLUMN_TASK_RATING + ") AS '" + DatabaseHelper.COLUMN_TASK_TOTAL_RATING +"'"
-                    + " COUNT(" + DatabaseHelper.COLUMN_TASK_RATING + ")"
+                    + ", COUNT(" + DatabaseHelper.COLUMN_TASK_RATING + ")"
                     + " FROM " + DatabaseHelper.TABLE_TASK + " WHERE " + DatabaseHelper.COLUMN_TASK_TO + " = '" + workerId +"'";
             LogUtils.e(TAG, "#updateWorkerRatings#rawQuery :: " + rawQuery);
             Cursor mCursor = mSqLiteDatabase.rawQuery(rawQuery, null);
             if (mCursor != null && mCursor.moveToFirst()) {
                 float totalRatings = mCursor.getFloat(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_TOTAL_RATING));
-                int count = mCursor.getInt(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_RATING));
+                int count = mCursor.getInt(mCursor.getColumnIndex("COUNT("+DatabaseHelper.COLUMN_TASK_RATING+")"));
                 float averageRating = totalRatings / count;
                 ContentValues mContentValues = new ContentValues();
                 mContentValues.put(DatabaseHelper.COLUMN_RATING, averageRating);

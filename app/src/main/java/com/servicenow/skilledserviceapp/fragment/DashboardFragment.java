@@ -206,7 +206,7 @@ public class DashboardFragment extends Fragment {
                 }
 
                 mCurrentTaskViewHolder.mTaskSkillImage.setImageResource(Constants.getSkillIcon(mTask.getTaskRequiredSkillName()));
-                mCurrentTaskViewHolder.mRating.setText("Ratings : " + mTask.getTaskRatings() + "/5");
+                mCurrentTaskViewHolder.mRating.setText("Task Rating : " + mTask.getTaskRatings() + "/5");
             }
         }
 
@@ -353,6 +353,7 @@ public class DashboardFragment extends Fragment {
             } else {
                 showErrorPopUp(getString(R.string.error_operation_can_not_be_performed));
             }
+            PreferenceUtils.getInstance(mActivity).setFloatPreference(Constants.PREF_KEY_RATINGS, 0L);
 
             manager.updateWorkerRatings(mTask.getTaskTo());
             manager.closeDatabase();
