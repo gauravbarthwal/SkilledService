@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_6"
                 android:maxLines="2"
-                android:text="Ratings: 4/5"
+                android:text="Ratings: 0/5"
                 android:textSize="@dimen/text_size_18" />
         </LinearLayout>
 

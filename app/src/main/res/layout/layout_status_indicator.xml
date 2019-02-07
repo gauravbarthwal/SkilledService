@@ -7,8 +7,8 @@
 
     <View
         android:id="@+id/statusIndicator"
-        android:layout_width="@dimen/margin_6"
-        android:layout_height="@dimen/margin_6"
+        android:layout_width="@dimen/margin_8"
+        android:layout_height="@dimen/margin_8"
         android:layout_gravity="center_vertical" />
 
     <android.support.v7.widget.AppCompatTextView

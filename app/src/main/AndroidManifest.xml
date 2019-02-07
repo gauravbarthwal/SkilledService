@@ -23,9 +23,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.MainActivity"
-            android:configChanges="orientation"/>
+            android:configChanges="orientation|keyboard|keyboardHidden"/>
         <activity android:name=".activity.HelperActivity"
-            android:configChanges="orientation"/>
+            android:configChanges="orientation|keyboard|keyboardHidden"/>
     </application>
 
 </manifest>

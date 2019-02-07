@@ -101,6 +101,10 @@ public class NavigationHelper {
                 mDialogFragmentHelper = DialogFragmentHelper.getInstance(mDialogType, inputMap, mDialogListener);
                 mDialogFragmentHelper.show(mFragmentManager, Constants.DIALOG_TASK_ACTION);
                 break;
+            case DIALOG_RATING:
+                mDialogFragmentHelper = DialogFragmentHelper.getInstance(mDialogType, inputMap, mDialogListener);
+                mDialogFragmentHelper.show(mFragmentManager, Constants.DIALOG_RATING);
+                break;
         }
     }
 }

@@ -359,7 +359,7 @@ public class DatabaseManager {
                 rawQuery = "SELECT * FROM " + DatabaseHelper.TABLE_TASK + " , " + DatabaseHelper.TABLE_SKILL + " , " + DatabaseHelper.TABLE_REQUESTER
                         + " WHERE " + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_TO + "= '" + userId + "' AND "
                         + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_SKILL +"=" + DatabaseHelper.TABLE_SKILL + "." + DatabaseHelper.COLUMN_SKILL_ID + " AND "
-                        + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_FROM + "=" + DatabaseHelper.TABLE_REQUESTER + "." + DatabaseHelper.COLUMN_REQUESTER_ID
+                        + DatabaseHelper.TABLE_REQUESTER + "." + DatabaseHelper.COLUMN_REQUESTER_ID + "=" + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_FROM
                         + " ORDER BY " + DatabaseHelper.TABLE_TASK + "." + DatabaseHelper.COLUMN_TASK_CREATED_AT + " DESC";
             }
             LogUtils.d(TAG, "#getTaskInfo#query ::" + rawQuery);
@@ -372,6 +372,35 @@ public class DatabaseManager {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * updates task status
+     * @param taskId - TaskID to be updated
+     * @param mTaskType - {@link TaskType}
+     */
+    public boolean updateTaskStatus(int taskId, TaskType mTaskType) {
+        String userId = PreferenceUtils.getInstance(mContext).getStringPreference(Constants.PREF_KEY_LOGGED_IN_USER_ID);
+        if (userId != null) {
+            ContentValues mContentValues = new ContentValues();
+            mContentValues.put(DatabaseHelper.COLUMN_TASK_STATUS, mTaskType.getValue());
+            int i = mSqLiteDatabase.update(DatabaseHelper.TABLE_TASK, mContentValues, DatabaseHelper.COLUMN_TASK_ID + " = ?", new String[]{String.valueOf(taskId)});
+            return i > -1;
+        }
+        return false;
+    }
+
+    /**
+     * updates task ratings
+     * @param ratings - ratings
+     * @param taskId - task id
+     * @return - true if updated else false
+     */
+    public boolean updateTaskRatings(float ratings, int taskId) {
+        ContentValues mContentValues = new ContentValues();
+        mContentValues.put(DatabaseHelper.COLUMN_TASK_RATING, ratings);
+        int i = mSqLiteDatabase.update(DatabaseHelper.TABLE_TASK, mContentValues, DatabaseHelper.COLUMN_TASK_ID + " = ?", new String[]{String.valueOf(taskId)});
+        return i > -1;
     }
 
     /**

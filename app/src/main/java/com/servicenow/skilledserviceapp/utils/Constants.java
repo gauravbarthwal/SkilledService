@@ -48,6 +48,7 @@ public class Constants {
     static final String PREF_NAME = "servicenow_preference";
     public static final String PREF_KEY_LOGGED_IN_USER_ID = "pref_key_logged_in_user_id";
     public static final String PREF_KEY_IS_REQUESTER = "pref_key_is_requester";
+    public static final String PREF_KEY_RATINGS = "pref_key_ratings";
 
     /**
      * keys to send data between Activity and Fragments
@@ -60,6 +61,7 @@ public class Constants {
     public static final String DIALOG_FAILURE = "dialog_failure";
     public static final String DIALOG_SUCCESS = "dialog_success";
     public static final String DIALOG_TASK_ACTION = "dialog_task_action";
+    public static final String DIALOG_RATING = "dialog_rating";
     public static final String DIALOG_KEY_MESSAGE = "dialog_key_message";
     public static final String DIALOG_KEY_ACTION_LEFT_LABEL = "dialog_key_action_left_label";
     public static final String DIALOG_KEY_ACTION_RIGHT_LABEL = "dialog_key_action_right_label";

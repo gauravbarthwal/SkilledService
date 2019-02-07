@@ -10,11 +10,14 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
 import android.view.View;
+import android.widget.RatingBar;
 
 import com.servicenow.skilledserviceapp.R;
 import com.servicenow.skilledserviceapp.interfaces.DialogListener;
 import com.servicenow.skilledserviceapp.utils.Constants;
 import com.servicenow.skilledserviceapp.utils.DialogType;
+import com.servicenow.skilledserviceapp.utils.LogUtils;
+import com.servicenow.skilledserviceapp.utils.PreferenceUtils;
 
 import java.util.HashMap;
 
@@ -27,17 +30,18 @@ public class DialogFragmentHelper extends DialogFragment{
 
     private Dialog mDialog;
     private DialogType mDialogType;
-    private DialogListener mDialogListener;
+    private static DialogListener mDialogListener;
     private static HashMap inputHashMap;
     private Activity mActivity;
 
-    public static DialogFragmentHelper getInstance(DialogType mDialogType, HashMap inputMap, DialogListener mDialogListener) {
+    public static DialogFragmentHelper getInstance(DialogType mDialogType, HashMap inputMap, DialogListener listener) {
         DialogFragmentHelper mDialogFragment = new DialogFragmentHelper ();
         Bundle mBundle = new Bundle();
         mBundle.putSerializable(Constants.KEY_DIALOG_MAP, inputMap);
         mBundle.putSerializable(Constants.KEY_DIALOG_TYPE, mDialogType);
         mDialogFragment.setArguments(mBundle);
         inputHashMap = inputMap;
+        mDialogListener = listener;
         return mDialogFragment;
     }
 
@@ -60,6 +64,8 @@ public class DialogFragmentHelper extends DialogFragment{
                     return dialogSuccess();
                 case DIALOG_TASK_ACTION:
                     return dialogTaskAction();
+                case DIALOG_RATING:
+                    return dialogRatings();
             }
         }
 
@@ -154,7 +160,7 @@ public class DialogFragmentHelper extends DialogFragment{
             @Override
             public void onClick(View v) {
                 if (mDialogListener != null)
-                    mDialogListener.onButtonClicked(mActionLeft);
+                    mDialogListener.onButtonClicked(mActionRight);
                 dismiss();
             }
         });
@@ -170,9 +176,47 @@ public class DialogFragmentHelper extends DialogFragment{
 
             if (inputHashMap.containsKey(DIALOG_KEY_ACTION_RIGHT_LABEL)) {
                 mActionRight.setText((CharSequence) inputHashMap.get(DIALOG_KEY_ACTION_RIGHT_LABEL));
-                mActionRight.setTag(inputHashMap.get(DIALOG_KEY_ACTION_LEFT_LABEL));
+                mActionRight.setTag(inputHashMap.get(DIALOG_KEY_ACTION_RIGHT_LABEL));
                 mActionRight.setVisibility(View.VISIBLE);
             }
+        }
+        return mDialog;
+    }
+
+    /**
+     * shows a rating dialog
+     * @return - {@link Dialog}
+     */
+    private Dialog dialogRatings() {
+        PreferenceUtils.getInstance(mActivity).setFloatPreference(Constants.PREF_KEY_RATINGS, 0f);
+        mDialog = new Dialog(mActivity);
+        mDialog.setContentView(R.layout.dialog_ratings);
+        final AppCompatTextView mDialogMessage = mDialog.findViewById(R.id.alert_message);
+        final AppCompatButton mActionSave = mDialog.findViewById(R.id.action_save);
+        final RatingBar mRatingBar = mDialog.findViewById(R.id.ratingBar);
+        mDialogMessage.setText(getString(R.string.rate_your_experience));
+        mActionSave.setTag(getString(R.string.action_save));
+        mActionSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDialogListener != null)
+                    mDialogListener.onButtonClicked(mActionSave);
+                dismiss();
+            }
+        });
+
+        mRatingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                LogUtils.e(TAG, "#dialogRatings#onRatingChanged#rating :: " + rating);
+                LogUtils.e(TAG, "#dialogRatings#onRatingChanged#fromUser :: " + fromUser);
+                PreferenceUtils.getInstance(mActivity).setFloatPreference(Constants.PREF_KEY_RATINGS, rating);
+            }
+        });
+
+        if (inputHashMap != null) {
+            if (inputHashMap.containsKey(DIALOG_KEY_MESSAGE))
+                mDialogMessage.setText((CharSequence) inputHashMap.get(DIALOG_KEY_MESSAGE));
         }
         return mDialog;
     }

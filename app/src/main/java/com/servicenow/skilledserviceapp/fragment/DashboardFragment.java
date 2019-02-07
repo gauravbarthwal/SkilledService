@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
@@ -44,6 +45,8 @@ public class DashboardFragment extends Fragment {
     private boolean isRequester;
     private String userId;
 
+    private View mFragmentView;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -57,7 +60,7 @@ public class DashboardFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View mFragmentView = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        mFragmentView = inflater.inflate(R.layout.fragment_dashboard, container, false);
         initFragmentView(mFragmentView);
         return mFragmentView;
     }
@@ -121,9 +124,9 @@ public class DashboardFragment extends Fragment {
                         mTask.setTaskStatus(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_STATUS)));
                         mTask.setCreatedAt(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_CREATED_AT)));
                         if (isRequester) {
-                            mTask.setTaskTo(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_NAME)));
+                            mTask.setTaskToName(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_NAME)));
                         } else {
-                            mTask.setTaskFrom(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_NAME)));
+                            mTask.setTaskFromName(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_NAME)));
                         }
                         mTaskArrayList.add(mTask);
                     } while (mCursor.moveToNext());
@@ -194,7 +197,13 @@ public class DashboardFragment extends Fragment {
                 } else if (mTask.getTaskStatus().equalsIgnoreCase(TaskType.TASK_CANCELED.getValue())){
                     mCurrentTaskViewHolder.mStatusIndicator.setBackgroundResource(R.drawable.ic_circle_red);
                     mCurrentTaskViewHolder.mStatusType.setText("Canceled");
+                } else if (mTask.getTaskStatus().equalsIgnoreCase(TaskType.TASK_COMPLETED.getValue())){
+                    mCurrentTaskViewHolder.mStatusIndicator.setBackgroundResource(R.drawable.ic_completed);
+                    mCurrentTaskViewHolder.mStatusType.setText("Completed");
                 }
+
+                mCurrentTaskViewHolder.mTaskSkillImage.setImageResource(Constants.getSkillIcon(mTask.getTaskRequiredSkillName()));
+                mCurrentTaskViewHolder.mRating.setText("Ratings : " + mTask.getTaskRatings() + "/5");
             }
         }
 
@@ -205,7 +214,9 @@ public class DashboardFragment extends Fragment {
 
         @Override
         public int getItemViewType(int position) {
-            return position == 0 ? NEW_TASK : 1;
+            if (isRequester && position == 0)
+                return NEW_TASK;
+            else return 1;
         }
 
         class NewTaskViewHolder extends RecyclerView.ViewHolder {
@@ -241,7 +252,7 @@ public class DashboardFragment extends Fragment {
                     public void onClick(View v) {
                         //Toast.makeText(mActivity, "Current TASK", Toast.LENGTH_SHORT).show();
                         final HashMap<String, String> inputMap = new HashMap<>();
-                        Task mTask = mTaskArrayList.get(getAdapterPosition());
+                        final Task mTask = mTaskArrayList.get(getAdapterPosition());
                         String taskStatus = mTask.getTaskStatus();
                         if (isRequester) {
                             inputMap.put(Constants.DIALOG_KEY_MESSAGE, "You have sent request to " + mTask.getTaskToName() + " on " + mTask.getCreatedAt());
@@ -262,12 +273,82 @@ public class DashboardFragment extends Fragment {
                         NavigationHelper.showDialog(getActivity(), DialogType.DIALOG_TASK_ACTION, inputMap, new DialogListener() {
                             @Override
                             public void onButtonClicked(Button action) {
-
+                                String actionTag = (String)action.getTag();
+                                if (actionTag.equalsIgnoreCase(getString(R.string.action_cancel_task))) {
+                                    DatabaseManager manager = new DatabaseManager(mActivity);
+                                    manager.openDatabase();
+                                    if (manager.updateTaskStatus(mTask.getTaskId(), TaskType.TASK_CANCELED)) {
+                                        manager.closeDatabase();
+                                        getCurrentTaskInfo();
+                                        Snackbar.make(mFragmentView, "Task request has been canceled!!", Snackbar.LENGTH_LONG).show();
+                                    } else {
+                                        manager.closeDatabase();
+                                        showErrorPopUp(getString(R.string.error_operation_can_not_be_performed));
+                                    }
+                                } else if (actionTag.equalsIgnoreCase(getString(R.string.action_accept_task))) {
+                                    DatabaseManager manager = new DatabaseManager(mActivity);
+                                    manager.openDatabase();
+                                    if (manager.updateTaskStatus(mTask.getTaskId(), TaskType.TASK_ONGOING)) {
+                                        manager.closeDatabase();
+                                        getCurrentTaskInfo();
+                                        Snackbar.make(mFragmentView, "Task request has been accepted!!", Snackbar.LENGTH_LONG).show();
+                                    } else {
+                                        manager.closeDatabase();
+                                        showErrorPopUp(getString(R.string.error_operation_can_not_be_performed));
+                                    }
+                                } else if (actionTag.equalsIgnoreCase(getString(R.string.action_task_completed))) {
+                                    DatabaseManager manager = new DatabaseManager(mActivity);
+                                    manager.openDatabase();
+                                    if (manager.updateTaskStatus(mTask.getTaskId(), TaskType.TASK_COMPLETED)) {
+                                        manager.closeDatabase();
+                                        getCurrentTaskInfo();
+                                        Snackbar.make(mFragmentView, "Task has been completed!!", Snackbar.LENGTH_LONG).show();
+                                        if (isRequester) {
+                                            NavigationHelper.showDialog(getActivity(), DialogType.DIALOG_RATING, null, new DialogListener() {
+                                                @Override
+                                                public void onButtonClicked(Button action) {
+                                                    updateTaskRatings(mTask.getTaskId());
+                                                }
+                                            });
+                                        }
+                                    } else {
+                                        manager.closeDatabase();
+                                        showErrorPopUp(getString(R.string.error_operation_can_not_be_performed));
+                                    }
+                                }
                             }
                         });
                     }
                 });
             }
         }
+    }
+
+    /**
+     * updates task ratings
+     * @param taskId - taskId
+     */
+    private void updateTaskRatings (int taskId) {
+        try {
+            float ratings = PreferenceUtils.getInstance(mActivity).getFloatPreference(Constants.PREF_KEY_RATINGS);
+            DatabaseManager manager = new DatabaseManager(mActivity);
+            manager.openDatabase();
+            if (manager.updateTaskRatings(ratings, taskId)) {
+                Snackbar.make(mFragmentView, "Ratings have been saved!!", Snackbar.LENGTH_SHORT).show();
+            } else {
+                showErrorPopUp(getString(R.string.error_operation_can_not_be_performed));
+            }
+            manager.closeDatabase();
+        } catch (Exception ignored){}
+    }
+
+    /**
+     * sets error message popup
+     * @param errorMessage - error message needs to be shown
+     */
+    private void showErrorPopUp(String errorMessage) {
+        final HashMap<String, String> inputMap = new HashMap<>();
+        inputMap.put(Constants.DIALOG_KEY_MESSAGE, errorMessage);
+        NavigationHelper.showDialog(getActivity(), DialogType.DIALOG_FAILURE, inputMap, null);
     }
 }
