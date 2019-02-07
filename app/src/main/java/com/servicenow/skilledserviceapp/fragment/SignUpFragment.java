@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import com.servicenow.skilledserviceapp.R;
 import com.servicenow.skilledserviceapp.activity.HelperActivity;
@@ -53,6 +52,9 @@ public class SignUpFragment extends Fragment {
 
     private DatabaseManager manager;
     private String userName = "";
+    private boolean doesUsernameExists = false;
+
+    private View mFragmentView;
 
     /**
      * click listener for mActionLogin
@@ -92,6 +94,8 @@ public class SignUpFragment extends Fragment {
                                 mActivity.finish();
                             }
                         }
+                    } else {
+                        Snackbar.make(mFragmentView, "Please fill all the details properly!!", Snackbar.LENGTH_SHORT).show();
                     }
                     break;
             }
@@ -131,16 +135,6 @@ public class SignUpFragment extends Fragment {
             LogUtils.e(TAG, "#onTextChanged :: " + s);
             mInputUserNameLayout.setErrorEnabled(false);
             mInputUserNameLayout.setError("");
-            /*if (manager != null) {
-                manager.openDatabase();
-                Cursor mCursor = manager.checkUserNameExists(s.toString());
-                if (mCursor != null) {
-                    while (mCursor.moveToFirst())
-                        LogUtils.d(TAG, "#onTextChanged#userName :: " + mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_USER_NAME)));
-                }
-                mCursor.close();
-                manager.closeDatabase();
-            }*/
             if (count > 0) {
                 userName = s.toString();
                 mUserNameCheckHandler.removeCallbacks(mUserNameCheckRunnable);
@@ -169,9 +163,10 @@ public class SignUpFragment extends Fragment {
                             if (userName.equals(mCursor.getString(mCursor.getColumnIndex(DatabaseHelper.COLUMN_USER_NAME)))) {
                                 mInputUserNameLayout.setErrorEnabled(true);
                                 mInputUserNameLayout.setError(getString(R.string.error_username_already_exists));
+                                doesUsernameExists = true;
                             }
                         } while (mCursor.moveToNext());
-                    }
+                    } else doesUsernameExists = false;
                     mCursor.close();
                     manager.closeDatabase();
                 } catch (Exception e) {
@@ -191,7 +186,7 @@ public class SignUpFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View mFragmentView = inflater.inflate(R.layout.fragment_signup, container, false);
+        mFragmentView = inflater.inflate(R.layout.fragment_signup, container, false);
         initFragmentView(mFragmentView);
         setUpListener();
         return mFragmentView;
@@ -256,6 +251,10 @@ public class SignUpFragment extends Fragment {
                 || userName.length() > getResources().getInteger(R.integer.username_max_length)) {
             mInputUserNameLayout.setErrorEnabled(true);
             mInputUserNameLayout.setError(getString(R.string.error_username_length));
+            return false;
+        } else if (doesUsernameExists) {
+            mInputUserNameLayout.setErrorEnabled(true);
+            mInputUserNameLayout.setError(getString(R.string.error_username_already_exists));
             return false;
         } else if (password.isEmpty()) {
             mInputPasswordLayout.setErrorEnabled(true);

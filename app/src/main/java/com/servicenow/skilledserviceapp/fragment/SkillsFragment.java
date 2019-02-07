@@ -95,6 +95,12 @@ public class SkillsFragment extends Fragment {
         return mFragmentView;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mSkillArrayList.clear();
+    }
+
     /**
      * initialize fragment view
      *
