@@ -17,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.servicenow.skilledserviceapp.R;
 import com.servicenow.skilledserviceapp.data.DatabaseHelper;
@@ -322,14 +321,12 @@ public class DashboardFragment extends Fragment {
                         manager.closeDatabase();
                         getCurrentTaskInfo();
                         Snackbar.make(mFragmentView, "Task has been completed!!", Snackbar.LENGTH_LONG).show();
-                        if (isRequester) {
-                            NavigationHelper.showDialog(getActivity(), DialogType.DIALOG_RATING, null, new DialogListener() {
-                                @Override
-                                public void onButtonClicked(Button action) {
-                                    updateTaskRatings(mTask);
-                                }
-                            });
-                        }
+                        NavigationHelper.showDialog(getActivity(), DialogType.DIALOG_RATING, null, new DialogListener() {
+                            @Override
+                            public void onButtonClicked(Button action) {
+                                updateTaskRatings(mTask);
+                            }
+                        });
                     } else {
                         manager.closeDatabase();
                         showErrorPopUp(getString(R.string.error_operation_can_not_be_performed));
@@ -340,7 +337,8 @@ public class DashboardFragment extends Fragment {
     }
 
     /**
-     * updates task ratings
+     * updates Task rating given by worker/requester
+     * and updated their respective ratings in worker/requester table
      * @param mTask - Task
      */
     private void updateTaskRatings (Task mTask) {
@@ -348,14 +346,23 @@ public class DashboardFragment extends Fragment {
             float ratings = PreferenceUtils.getInstance(mActivity).getFloatPreference(Constants.PREF_KEY_RATINGS);
             DatabaseManager manager = new DatabaseManager(mActivity);
             manager.openDatabase();
-            if (manager.updateTaskRatings(ratings, mTask.getTaskId())) {
-                Snackbar.make(mFragmentView, "Ratings have been saved!!", Snackbar.LENGTH_SHORT).show();
+            boolean ratingUpdated;
+
+            if (isRequester) {
+                ratingUpdated = manager.updateTaskRatingByRequester(ratings, mTask.getTaskId());
+            } else {
+                ratingUpdated = manager.updateTaskRatingByWroker(ratings, mTask.getTaskId());
+            }
+            if (ratingUpdated) {
+                Snackbar.make(mFragmentView, "Rating has been saved!!", Snackbar.LENGTH_SHORT).show();
             } else {
                 showErrorPopUp(getString(R.string.error_operation_can_not_be_performed));
             }
             PreferenceUtils.getInstance(mActivity).setFloatPreference(Constants.PREF_KEY_RATINGS, 0L);
 
-            manager.updateWorkerRatings(mTask.getTaskTo());
+            if (isRequester)
+                manager.updateWorkerRatings(mTask.getTaskTo());
+            else manager.updateRequesterRating(mTask.getTaskFrom());
             manager.closeDatabase();
         } catch (Exception ignored){}
     }

@@ -392,12 +392,12 @@ public class DatabaseManager {
     }
 
     /**
-     * updates task ratings
+     * updates task ratings given by Requester
      * @param ratings - ratings
      * @param taskId - task id
      * @return - true if updated else false
      */
-    public boolean updateTaskRatings(float ratings, int taskId) {
+    public boolean updateTaskRatingByRequester(float ratings, int taskId) {
         ContentValues mContentValues = new ContentValues();
         mContentValues.put(DatabaseHelper.COLUMN_TASK_RATING, ratings);
         int i = mSqLiteDatabase.update(DatabaseHelper.TABLE_TASK, mContentValues, DatabaseHelper.COLUMN_TASK_ID + " = ?", new String[]{String.valueOf(taskId)});
@@ -424,6 +424,44 @@ public class DatabaseManager {
                 mSqLiteDatabase.update(DatabaseHelper.TABLE_WORKER, mContentValues, DatabaseHelper.COLUMN_WORKER_ID + " = ?", new String[]{workerId});
             }
         } catch (Exception e){
+            if (Constants.PRINT_LOGS)
+                e.printStackTrace();
+        }
+    }
+
+    /**
+     * updates requester rating in Task table given by Worker
+     * @param ratings - ratings
+     * @param taskId - task id
+     * @return - true if updated else false
+     */
+    public boolean updateTaskRatingByWroker(float ratings, int taskId) {
+        ContentValues mContentValues = new ContentValues();
+        mContentValues.put(DatabaseHelper.COLUMN_TASK_REQUESTER_RATING, ratings);
+        int i = mSqLiteDatabase.update(DatabaseHelper.TABLE_TASK, mContentValues, DatabaseHelper.COLUMN_TASK_ID + " = ?", new String[]{String.valueOf(taskId)});
+        return i > -1;
+    }
+
+    /**
+     * updates requester's rating based on the tasks are being requested
+     * @param requesterId - requester id
+     */
+    public void updateRequesterRating(String requesterId) {
+        try {
+            String rawQuery = "SELECT SUM(" + DatabaseHelper.COLUMN_TASK_REQUESTER_RATING + ") AS '" + DatabaseHelper.COLUMN_TASK_TOTAL_REQUESTER_RATING +"'"
+                    + ", COUNT(" + DatabaseHelper.COLUMN_TASK_REQUESTER_RATING + ")"
+                    + " FROM " + DatabaseHelper.TABLE_TASK + " WHERE " + DatabaseHelper.COLUMN_TASK_FROM + " = '" + requesterId +"'";
+            LogUtils.e(TAG, "#updateRequesterRating#rawQuery :: " + rawQuery);
+            Cursor mCursor = mSqLiteDatabase.rawQuery(rawQuery, null);
+            if (mCursor != null && mCursor.moveToFirst()) {
+                float totalRatings = mCursor.getFloat(mCursor.getColumnIndex(DatabaseHelper.COLUMN_TASK_TOTAL_REQUESTER_RATING));
+                int count = mCursor.getInt(mCursor.getColumnIndex("COUNT("+DatabaseHelper.COLUMN_TASK_REQUESTER_RATING+")"));
+                float averageRating = totalRatings / count;
+                ContentValues mContentValues = new ContentValues();
+                mContentValues.put(DatabaseHelper.COLUMN_RATING, averageRating);
+                mSqLiteDatabase.update(DatabaseHelper.TABLE_REQUESTER, mContentValues, DatabaseHelper.COLUMN_REQUESTER_ID + " = ?", new String[]{requesterId});
+            }
+        } catch (Exception e) {
             if (Constants.PRINT_LOGS)
                 e.printStackTrace();
         }
